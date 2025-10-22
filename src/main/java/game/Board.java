@@ -1,6 +1,7 @@
 package game;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Random;
 
 public class Board implements Cloneable {
 
@@ -201,7 +202,7 @@ public class Board implements Cloneable {
     // Generates a random direction (the first one)
     int generatingFirstDirection(Vec2D pos) {
         Vec2D next; // Tested position
-        Vec2D sides[] = this.sides();
+        Vec2D sides[] = Board.sides();
         this.rng = new Random();
         int direction;
         do {
@@ -215,7 +216,7 @@ public class Board implements Cloneable {
     Vec2D generatingFirstMovement(Vec2D pos, int direction) {
         // Position testée
         Vec2D next;
-        Vec2D sides[] = this.sides();
+        Vec2D sides[] = Board.sides();
         int distance;
         switch (direction) {
             case 0:
@@ -288,7 +289,7 @@ public class Board implements Cloneable {
         if (this.getCase(pos) != null) {
             return false;
         }
-        Vec2D sides[] = this.sides();
+        Vec2D sides[] = Board.sides();
 
         // We don't want to check the last cell
         sides[this.opposedDirection(direction)] = new Vec2D(0, 0);
@@ -336,18 +337,18 @@ public class Board implements Cloneable {
     }
 
     // Generates a position which checks the line method
-    int[] generatingNewPosition(ArrayList<Vec2D> inserer) {
-        ArrayList<Vec2D> insererClone = (ArrayList<Vec2D>) inserer.clone();
+    int[] generatingNewPosition(ArrayList<Vec2D> insert) {
+        ArrayList<Vec2D> insertClone = new ArrayList<Vec2D>(insert);
         this.rng = new Random();
         Vec2D next = null;
-        Vec2D sides[] = this.sides();
+        Vec2D sides[] = Board.sides();
         boolean condition = false;
         int iVec;
         Vec2D pos;
         int direction = -1;
         // Search a new position
-        while (!condition || direction == -1 || insererClone.isEmpty()) {
-            if (insererClone.isEmpty()) {
+        while (!condition || direction == -1 || insertClone.isEmpty()) {
+            if (insertClone.isEmpty()) {
                 break;
             }
             condition = false;
@@ -357,11 +358,10 @@ public class Board implements Cloneable {
                 possibilites.add(i);
             }
             // We take a random vector from already placed ones
-            iVec = rng.nextInt(insererClone.size());
-            pos = insererClone.get(iVec);
-            insererClone.remove(iVec);
+            iVec = rng.nextInt(insertClone.size());
+            pos = insertClone.get(iVec);
+            insertClone.remove(iVec);
             int rand;
-            int i = 0;
             while (!possibilites.isEmpty() && !condition) {
                 rand = rng.nextInt(possibilites.size());
                 next = pos.add(sides[possibilites.get(rand)]);
@@ -375,7 +375,7 @@ public class Board implements Cloneable {
             }
         }
         // Case when we cannot fill the two last cells
-        if (insererClone.isEmpty()) {
+        if (insertClone.isEmpty()) {
             return new int[1];
         }
 
@@ -386,7 +386,7 @@ public class Board implements Cloneable {
     int generatingNewDirection(Vec2D pos) {
         this.rng = new Random();
         Vec2D next = null;
-        Vec2D sides[] = this.sides();
+        Vec2D sides[] = Board.sides();
         int direction = 0;
         int iDirection = 0;
         ArrayList<Integer> directions = new ArrayList<>();
@@ -439,7 +439,7 @@ public class Board implements Cloneable {
     Vec2D generatingEvenPosition(Vec2D pos, int direction) {
         this.rng = new Random();
         Vec2D next = null;
-        Vec2D sides[] = this.sides();
+        Vec2D sides[] = Board.sides();
         // Step building: we start by initializing a distance between
         // the tile position and the board border
         ArrayList<Integer> distance = this.generatingDistance(pos, direction);
@@ -514,7 +514,7 @@ public class Board implements Cloneable {
         return (vector.x == 13 || vector.x == 0 || vector.y == 13 || vector.y == 0);
     }
 
-    // Checks if the move is possible 
+    // Checks if the move is possible
     // verifier si un coup est possible entre 2 cases
     public boolean validMerge(Vec2D a, Vec2D b) {
         // Checks if the tiles are equivalent
@@ -525,7 +525,7 @@ public class Board implements Cloneable {
         // System.out.println("search");
 
         // Possible directions
-        Vec2D sides[] = this.sides();
+        Vec2D sides[] = Board.sides();
 
         // Taken path to reach to the current step. It works like a stack
         ArrayList<Integer> path = new ArrayList<>(); // Taken direction array to reach to each step
@@ -576,7 +576,7 @@ public class Board implements Cloneable {
                     if (path.size() <= 0) {
                         return false;
                     } // If the path is empty, there is no possible path
-                    // Unstacks the path
+                      // Unstacks the path
                     int last = path.size() - 1;
                     side = path.get(last);
                     pos = pos.sub(sides[side]);
@@ -599,16 +599,11 @@ public class Board implements Cloneable {
         String display = new String();
         display += "     01 02 03 04 05 06 07 08 09 10 11 12      " + "\n";
         display += "   +-------------------------------------+    " + "\n";
-        for (int ligne = 1; ligne <= size; ligne++) {
-            String l;
-            if (ligne < 10) {
-                l = "0" + ligne;
-            } else {
-                l = "" + ligne;
-            }
+        for (int row = 1; row <= size; row++) {
+            String l = (row < 10 ? "0" : "") + row;
             display += l + " | ";
-            for (int colonne = 1; colonne <= size; colonne++) {
-                display += this.cases[ligne][colonne].toString() + " ";
+            for (int col = 1; col <= size; col++) {
+                display += this.cases[row][col].toString() + " ";
             }
             display += "| " + l + "\n";
         }
