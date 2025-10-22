@@ -14,6 +14,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -45,6 +46,18 @@ public class GUI extends JPanel {
     Vec2D selection;
     boolean noSolution;
     Vec2D[] hint;
+
+    static HashMap<Character, String> IMAGE_FROM_TYPE = new HashMap<>() {
+        {
+            put('R', "caractere"); // character
+            put('B', "bambou"); // bamboo
+            put('C', "cercle"); // circle
+            put('V', "vent"); // wind
+            put('D', "dragon"); // dragon
+            put('F', "fleur"); // flower
+            put('S', "saison"); // season
+        }
+    };
 
     public static void main(String[] args) {
         try {
@@ -80,7 +93,7 @@ public class GUI extends JPanel {
         for (int i = 0; i < tiles.length; i++) {
             // Try to load the corresponding tile
             try {
-                InputStream is = GUI.class.getResourceAsStream("/image/" + this.fileFor(tiles[i]) + ".png");
+                InputStream is = GUI.class.getResourceAsStream(String.format("/image/%s.png", this.fileFor(tiles[i])));
                 images[i] = ImageIO.read(is);
             } catch (IOException ex) {
                 Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
@@ -95,43 +108,18 @@ public class GUI extends JPanel {
     }
 
     private void gameDisplayUpdate() {
-        revertLabel.setText("Left moves in memory: " + game.getHistorySize());
-        hintLabel.setText("Left hints: " + game.getAvailableHints());
+        revertLabel.setText(String.format("Left moves in memory: %d", game.getHistorySize()));
+        hintLabel.setText(String.format("Left hints: %d", game.getAvailableHints()));
         canvas.repaint();
     }
 
     // Gives a name of the file corresponding to the specified tile
-    private String fileFor(Tile t) {
-        String str = t.type + "" + (int) t.id;
-        String image = null;
-        switch (str.charAt(0)) {
-            case 'R':
-                image = "caractere" + str.substring(1);
-                break;
-            case 'B':
-                image = "bambou" + str.substring(1);
-                break;
-            case 'C':
-                image = "cercle" + str.substring(1);
-                break;
-            case 'V':
-                image = "vent" + str.substring(1);
-                break;
-            case 'D':
-                image = "dragon" + str.substring(1);
-                break;
-            case 'F':
-                image = "fleur" + str.substring(1);
-                break;
-            case 'S':
-                image = "saison" + str.substring(1);
-                break;
-        }
-        return image;
+    private String fileFor(Tile tile) {
+        return IMAGE_FROM_TYPE.get(tile.type) + (int) tile.id;
     }
 
-    Image imageFor(Tile t) {
-        return images[t.dispoIndex()];
+    Image imageFor(Tile tile) {
+        return images[tile.dispoIndex()];
     }
 
     /**
@@ -164,18 +152,18 @@ public class GUI extends JPanel {
 
                 // to edit this code, UI designer > JPanel > customize-code
 
-                Board p = game.getPlateau();
+                Board board = game.getBoard();
                 int iWidth = images[0].getWidth(null);
                 int iHeight = images[0].getHeight(null);
                 Dimension dim = this.getSize();
-                int size = p.getSize();
+                int size = board.getSize();
                 imgScale = new Vec2D(dim.width / size, dim.height / size);
-                for (int l = 1; l <= size; l++) {
-                    for (int c = 1; c <= size; c++) {
-                        Tile t = p.getCase(new Vec2D(l, c));
-                        if (!t.free()) {
-                            g.drawImage(imageFor(t), (c - 1) * imgScale.x, (l - 1) * imgScale.y, (c) * imgScale.x,
-                                    (l) * imgScale.y, 0, 0, iWidth, iHeight, null);
+                for (int row = 1; row <= size; row++) {
+                    for (int col = 1; col <= size; col++) {
+                        Tile tile = board.getCase(new Vec2D(row, col));
+                        if (!tile.free()) {
+                            g.drawImage(imageFor(tile), (col - 1) * imgScale.x, (row - 1) * imgScale.y,
+                                    col * imgScale.x, row * imgScale.y, 0, 0, iWidth, iHeight, null);
                         }
                     }
                 }
@@ -219,6 +207,7 @@ public class GUI extends JPanel {
                 }
             }
         };
+
         jSeparator1 = new JSeparator();
 
         hintButton.setText("Hint");
