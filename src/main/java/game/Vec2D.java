@@ -1,4 +1,4 @@
-package Jeu;
+package game;
 
 public class Vec2D implements Cloneable {
     public int x;

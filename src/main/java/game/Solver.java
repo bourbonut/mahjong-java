@@ -1,4 +1,4 @@
-package Jeu;
+package game;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -8,12 +8,12 @@ import java.util.Random;
  * In the current state, there are some boards that the solver cannot solve because it ends in a unresolvable situation
  * but they are minority cases.
  */
-public class Solveur {
+public class Solver {
     // int random_order[]; // board iteration order, for resolutions, allows to make the generation more complicated
-    Plateau plat;
+    Board plat;
     int onBoard;
 
-    public Solveur(Plateau p) {
+    public Solver(Board p) {
         this.plat = p;
         int taille = p.getTaille();
 
@@ -59,7 +59,7 @@ public class Solveur {
     // Find a distant tile couple to *pair* (with valid path)
     public Vec2D[] nextMergeDistant() {
         int size = plat.getTaille();
-        Vec2D[] sides = Plateau.sides();
+        Vec2D[] sides = Board.sides();
         // Find a filled cell on border (adjacent to empty cell)
         Vec2D a = new Vec2D(1, 1);
 
@@ -221,8 +221,8 @@ public class Solveur {
     }
 
     // Testing function: display the resolution steps of a `p` board, stops in failing case
-    public static void testAutoSolve(Plateau p) {
-        Solveur s = new Solveur(p);
+    public static void testAutoSolve(Board p) {
+        Solver s = new Solver(p);
 
         while (!s.finished()) {
             System.out.println("\n" + s.plat);
@@ -240,8 +240,8 @@ public class Solveur {
     }
 
     public static void main(String[] args) {
-        System.out.println("test Solveur.main ...\n");
-        Plateau p = new Plateau();
+        System.out.println("test Solver.main ...\n");
+        Board p = new Board();
 
         // p.generateRandom();
         p.generateSolvableStatic();

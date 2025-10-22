@@ -1,20 +1,20 @@
-package Jeu;
+package game;
 
-public class Tuile {
+public class Tile {
     public char type; // type of tile (bamboo, flower, and so on ...)
     public char id; // Identity of the tile
 
-    Tuile(char type, char id) {
+    Tile(char type, char id) {
         this.type = type;
         this.id = id;
     }
 
-    public static Tuile empty() {
-        return new Tuile('.', '.');
+    public static Tile empty() {
+        return new Tile('.', '.');
     } // Returns an empty tile
 
-    public static Tuile border() {
-        return new Tuile('.', '_');
+    public static Tile border() {
+        return new Tile('.', '_');
     } // Returns a border tile
 
     public boolean free() {
@@ -42,7 +42,7 @@ public class Tuile {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        final Tuile other = (Tuile) obj;
+        final Tile other = (Tile) obj;
         if (this.type != other.type)
             return false;
         if (this.id != other.id)
@@ -51,25 +51,25 @@ public class Tuile {
     }
 
     // Returns the array of different tiles
-    public static Tuile[] all() {
-        Tuile[] liste = new Tuile[3 * 9 + 4 + 3 + 4 + 4];
+    public static Tile[] all() {
+        Tile[] liste = new Tile[3 * 9 + 4 + 3 + 4 + 4];
         int i = 0;
         for (int j = 1; j <= 9; j++)
-            liste[i++] = new Tuile('R', (char) j);
+            liste[i++] = new Tile('R', (char) j);
         for (int j = 1; j <= 9; j++)
-            liste[i++] = new Tuile('B', (char) j);
+            liste[i++] = new Tile('B', (char) j);
         for (int j = 1; j <= 9; j++)
-            liste[i++] = new Tuile('C', (char) j);
+            liste[i++] = new Tile('C', (char) j);
 
         for (int j = 1; j <= 4; j++)
-            liste[i++] = new Tuile('V', (char) j);
+            liste[i++] = new Tile('V', (char) j);
         for (int j = 1; j <= 3; j++)
-            liste[i++] = new Tuile('D', (char) j);
+            liste[i++] = new Tile('D', (char) j);
 
         for (int j = 1; j <= 4; j++)
-            liste[i++] = new Tuile('F', (char) j);
+            liste[i++] = new Tile('F', (char) j);
         for (int j = 1; j <= 4; j++)
-            liste[i++] = new Tuile('S', (char) j);
+            liste[i++] = new Tile('S', (char) j);
 
         return liste;
     }
@@ -119,7 +119,7 @@ public class Tuile {
         }
     }
 
-    public boolean appairable(Tuile other) {
+    public boolean appairable(Tile other) {
         if (this.free())
             return false;
         if (this.type == 'F' && other.type == 'F')
@@ -131,12 +131,12 @@ public class Tuile {
 
     // Checks the tile creation
     public static void main(String[] args) {
-        int[] test = Tuile.number();
+        int[] test = Tile.number();
         for (int i = 0; i < test.length; i++) {
             System.out.println(test[i]);
         }
 
-        for (Tuile t : Tuile.all()) {
+        for (Tile t : Tile.all()) {
             System.out.println("index de " + t + ": " + t.dispoIndex());
         }
     }

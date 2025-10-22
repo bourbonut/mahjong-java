@@ -1,4 +1,4 @@
-package Jeu;
+package game;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -7,19 +7,19 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class Game {
-    Solveur s;
-    Plateau p;
+    Solver s;
+    Board p;
     int available_hints;
     boolean cheat;
 
-    ArrayList<Plateau> history;
+    ArrayList<Board> history;
 
     final int initial_hints = 10;
     final int history_size = 10;
 
-    public Game(Plateau p) {
+    public Game(Board p) {
         this.p = p;
-        this.s = new Solveur(p);
+        this.s = new Solver(p);
         this.available_hints = initial_hints;
         this.history = new ArrayList<>();
         this.cheat = false;
@@ -32,7 +32,7 @@ public class Game {
 
     // Creates a party with a board given the specified difficulty
     public Game(int difficulty) {
-        this.p = new Plateau();
+        this.p = new Board();
         switch (difficulty) {
             case 0: // The hardest
                 this.p.generateRandom(); // Board might be unsolvable
@@ -45,7 +45,7 @@ public class Game {
                 break;
         }
 
-        this.s = new Solveur(p);
+        this.s = new Solver(p);
         this.available_hints = initial_hints;
         this.history = new ArrayList<>();
     }
@@ -81,7 +81,7 @@ public class Game {
         int s = this.history.size();
         if (0 < n && n <= s) {
             this.p = this.history.get(s - n);
-            this.s = new Solveur(this.p);
+            this.s = new Solver(this.p);
             for (int i = s - 1; i >= s - n; i--)
                 this.history.remove(i);
             return true;
@@ -90,8 +90,8 @@ public class Game {
     }
 
     // Adds board to history
-    void historyAppend(Plateau p) {
-        history.add((Plateau) p.clone());
+    void historyAppend(Board p) {
+        history.add((Board) p.clone());
         while (history.size() > this.history_size)
             history.remove(0);
     }
@@ -101,7 +101,7 @@ public class Game {
         FileWriter fichier;
         try {
             fichier = new FileWriter(nomDuFichier);
-            fichier.write("Plateau:" + System.getProperty("line.separator"));
+            fichier.write("Board:" + System.getProperty("line.separator"));
             fichier.write(this.p.save() + System.getProperty("line.separator"));
             fichier.write("Hints restants:" + System.getProperty("line.separator"));
             fichier.write(this.available_hints + System.getProperty("line.separator"));
@@ -123,24 +123,24 @@ public class Game {
             ligne = fichier.readLine();
             ligne = fichier.readLine();
             if (this.p == null)
-                this.p = new Plateau();
+                this.p = new Board();
             this.p.load(ligne);
             ligne = fichier.readLine();
             ligne = fichier.readLine();
             this.available_hints = Integer.parseInt(ligne);
             ligne = fichier.readLine();
-            Plateau plat;
+            Board plat;
             if (fichier.ready()) {// false if the history is empty
                 this.history = new ArrayList<>();
                 do {
-                    plat = new Plateau();
+                    plat = new Board();
                     ligne = fichier.readLine();
                     plat.load(ligne);
                     this.history.add(plat);
                 } while (fichier.ready());
             }
             fichier.close();
-            this.s = new Solveur(this.p);
+            this.s = new Solver(this.p);
 
             return true;
 
@@ -150,7 +150,7 @@ public class Game {
         }
     }
 
-    public Plateau getPlateau() {
+    public Board getPlateau() {
         return this.p;
     }
 

@@ -1,14 +1,14 @@
-package Jeu;
+package game;
 
-import Jeu.Tuile;
-import Jeu.Plateau;
+import game.Tile;
+import game.Board;
 import java.util.*;
 
 public class Majhong {
 
     public static void main(String[] args) {
         // TODO code application logic here
-        Plateau p = new Plateau();
+        Board p = new Board();
         // p.generateRandom();
         p.generateSolvableStatic();
 
@@ -25,8 +25,8 @@ public class Majhong {
             // System.out.println("search from " + a + " to "+ b); // display input coordinates
             if (p.validMerge(a, b)) {
                 System.out.println("             -- valid move --");
-                p.setCase(a, Tuile.empty());
-                p.setCase(b, Tuile.empty());
+                p.setCase(a, Tile.empty());
+                p.setCase(b, Tile.empty());
             } else
                 System.out.println("      -- invalid move, retry --");
         }

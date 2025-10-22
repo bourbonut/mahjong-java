@@ -1,9 +1,9 @@
-package Interface;
+package ui;
 
-import Jeu.Game;
-import Jeu.Plateau;
-import Jeu.Tuile;
-import Jeu.Vec2D;
+import game.Game;
+import game.Board;
+import game.Tile;
+import game.Vec2D;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -21,7 +21,7 @@ import javax.swing.JFrame;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.WindowConstants;
 
-public class GameGraphic extends javax.swing.JPanel {
+public class GUI extends javax.swing.JPanel {
 
     Game game;
     int difficulty;
@@ -38,39 +38,39 @@ public class GameGraphic extends javax.swing.JPanel {
             javax.swing.UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
         } catch (ClassNotFoundException e) {
         } catch (InstantiationException ex) {
-            Logger.getLogger(GameGraphic.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            Logger.getLogger(GameGraphic.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
         } catch (UnsupportedLookAndFeelException ex) {
-            Logger.getLogger(GameGraphic.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         JFrame window = new JFrame("Majhong");
         window.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         // frame.setSize(1920, 1080);
         window.setVisible(true);
-        GameGraphic gui = new GameGraphic();
+        GUI gui = new GUI();
         window.add(gui);
         window.pack();
     }
 
-    public GameGraphic() {
+    public GUI() {
         noSolution = false;
 
         difficulty = 1; // default game parameter
         this.game = new Game(this.difficulty);
 
         // load all images once
-        Tuile[] tuiles = Tuile.all();
+        Tile[] tuiles = Tile.all();
         images = new Image[tuiles.length];
 
         for (int i = 0; i < tuiles.length; i++) {
             // Try to load the corresponding tile
             try {
-                InputStream is = GameGraphic.class.getResourceAsStream("/image/" + this.fileFor(tuiles[i]) + ".png");
+                InputStream is = GUI.class.getResourceAsStream("/image/" + this.fileFor(tuiles[i]) + ".png");
                 images[i] = ImageIO.read(is);
             } catch (IOException ex) {
-                Logger.getLogger(GameGraphic.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
 
@@ -88,7 +88,7 @@ public class GameGraphic extends javax.swing.JPanel {
     }
 
     // Gives a name of the file corresponding to the specified tile
-    private String fileFor(Tuile t) {
+    private String fileFor(Tile t) {
         String str = t.type + "" + (int) t.id;
         String image = null;
         switch (str.charAt(0)) {
@@ -117,7 +117,7 @@ public class GameGraphic extends javax.swing.JPanel {
         return image;
     }
 
-    Image imageFor(Tuile t) {
+    Image imageFor(Tile t) {
         return images[t.dispoIndex()];
     }
 
@@ -152,7 +152,7 @@ public class GameGraphic extends javax.swing.JPanel {
 
                 // to edit this code, UI designer > JPanel > customize-code 
 
-                Plateau p = game.getPlateau();
+                Board p = game.getPlateau();
                 int iWidth = images[0].getWidth(null);
                 int iHeight = images[0].getHeight(null);
                 Dimension dim = this.getSize();
@@ -163,7 +163,7 @@ public class GameGraphic extends javax.swing.JPanel {
 
                 for (int l = 1; l <= taille; l++) {
                     for (int c = 1; c <= taille; c++) {
-                        Tuile t = p.getCase(new Vec2D(l, c));
+                        Tile t = p.getCase(new Vec2D(l, c));
                         if (!t.free()) {
                             g.drawImage(imageFor(t), (c - 1) * imgScale.x, (l - 1) * imgScale.y, (c) * imgScale.x,
                                     (l) * imgScale.y, 0, 0, iWidth, iHeight, null);

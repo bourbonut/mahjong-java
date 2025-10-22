@@ -1,19 +1,19 @@
-package Jeu;
+package game;
 
-import Jeu.Game.*;
+import game.Game.*;
 import java.util.*;
 
-public class TestPlateau {
+public class TestBoard {
 
     public static void main(String[] args) {
         // TODO code application logic here
-        Plateau test = new Plateau();
+        Board test = new Board();
         // test.setColonne(10);
         test.generateSolvableStaticLine();
         System.out.println(test.toString());
         Game g = new Game(test);
         g.save("Sauvegarde");
-        Game a = new Game(new Plateau());
+        Game a = new Game(new Board());
         a.load("Sauvegarde");
         System.out.println(a.toString());
         // System.out.print("Give a integer:");

@@ -1,23 +1,23 @@
-package Jeu;
+package game;
 
 import java.util.*;
 
-public class Plateau implements Cloneable {
+public class Board implements Cloneable {
 
     // Board cells with tiles and border
-    private Tuile[][] cases;
+    private Tile[][] cases;
     // Random number
     private Random rng;
     private int taille;
 
-    public Plateau() {
+    public Board() {
         taille = 12;
-        this.cases = new Tuile[taille + 2][taille + 2]; // 12 + 2 => 2 for the border
+        this.cases = new Tile[taille + 2][taille + 2]; // 12 + 2 => 2 for the border
         this.rng = new Random();
     }
 
     public void load(String str) {
-        this.cases = new Tuile[taille + 2][taille + 2];
+        this.cases = new Tile[taille + 2][taille + 2];
         this.generateBorder();
         String s;
         int i = 1; // Index of the element
@@ -25,9 +25,9 @@ public class Plateau implements Cloneable {
             for (int colonne = 1; colonne <= taille; colonne++) {
                 s = str.substring(i, i + 2);
                 if (s.equals("..")) {
-                    this.cases[ligne][colonne] = Tuile.empty();
+                    this.cases[ligne][colonne] = Tile.empty();
                 } else {
-                    this.cases[ligne][colonne] = new Tuile(s.charAt(0), (char) Integer.parseInt(s.substring(1)));
+                    this.cases[ligne][colonne] = new Tile(s.charAt(0), (char) Integer.parseInt(s.substring(1)));
                 }
                 i += 3; // to skip "XX," where XX can be R9 for instance
             }
@@ -49,9 +49,9 @@ public class Plateau implements Cloneable {
     // Builds the board with tiles randomly arranged in the board
     public void generateRandom() {
         // Tile type array
-        Tuile[] types = Tuile.all();
+        Tile[] types = Tile.all();
         // Disponibility array given specified tile type
-        int[] disponibilites = Tuile.number();
+        int[] disponibilites = Tile.number();
 
         for (int ligne = 1; ligne <= taille; ligne++) {
             for (int colonne = 1; colonne <= taille; colonne++) {
@@ -69,7 +69,7 @@ public class Plateau implements Cloneable {
 
     // Fills the border with empty tiles
     public void generateBorder() {
-        Tuile border = Tuile.border();
+        Tile border = Tile.border();
         for (int i = 0; i < taille + 2; i++) {
             this.cases[0][i] = border;
         }
@@ -90,7 +90,7 @@ public class Plateau implements Cloneable {
 
     // Fix the board to be solvable
     public void correct() {
-        Solveur s = new Solveur((Plateau) this.clone());
+        Solver s = new Solver((Board) this.clone());
         int solvedIteration = 0;
         while (!s.finished()) { // Use a solver to solve the game
 
@@ -105,7 +105,7 @@ public class Plateau implements Cloneable {
                 merge = s.findPair();
                 // Take a filled cell on next to one of tiles
                 // Note: It does not make board hard to solve (pairs are adjacents)
-                for (Vec2D side : Plateau.sides()) {
+                for (Vec2D side : Board.sides()) {
                     Vec2D near = merge[0].add(side);
                     if (!this.getCase(near).free()) {
                         // Swap the found cell with the second pair
@@ -129,8 +129,8 @@ public class Plateau implements Cloneable {
 
     // Build a board with the line method
     public void generateSolvableStaticLine() {
-        Tuile[] types = Tuile.all(); // Tile type array
-        int[] disponibilites = Tuile.number(); // Disponibility array given specified tile type
+        Tile[] types = Tile.all(); // Tile type array
+        int[] disponibilites = Tile.number(); // Disponibility array given specified tile type
 
         // Current position courante of the first placed tile
         Vec2D pos;
@@ -144,7 +144,7 @@ public class Plateau implements Cloneable {
         int ligne = rng.nextInt(taille) + 1;
         int colonne = rng.nextInt(taille) + 1;
 
-        // Première tuile placée
+        // Première Tile placée
         index = rng.nextInt(types.length);
         this.cases[ligne][colonne] = types[index];
         disponibilites[index]--;
@@ -152,7 +152,7 @@ public class Plateau implements Cloneable {
         pos = new Vec2D(ligne, colonne);
         inserer.add(pos);
 
-        // Placement de la deuxième tuile
+        // Placement de la deuxième Tile
         direction = this.generatingFirstDirection(pos);
         posPaire = this.generatingFirstMovement(pos, direction);
         coordonnees = posPaire.toTable();
@@ -173,7 +173,7 @@ public class Plateau implements Cloneable {
             // If the random choice does not allow to fill the two last cells,
             // it restarts until it works
             if (posEtDirection.length == 1) {
-                this.cases = new Tuile[taille + 2][taille + 2];
+                this.cases = new Tile[taille + 2][taille + 2];
                 this.generateSolvableStaticLine();
                 break;
             }
@@ -485,11 +485,11 @@ public class Plateau implements Cloneable {
         return new Vec2D[] { new Vec2D(-1, 0), new Vec2D(1, 0), new Vec2D(0, 1), new Vec2D(0, -1), };
     }
 
-    public Tuile getCase(Vec2D position) {
+    public Tile getCase(Vec2D position) {
         return this.cases[position.x][position.y];
     }
 
-    public void setCase(Vec2D position, Tuile toset) {
+    public void setCase(Vec2D position, Tile toset) {
         this.cases[position.x][position.y] = toset;
     }
 
@@ -499,14 +499,14 @@ public class Plateau implements Cloneable {
 
     // Swap two tile
     public void swap(Vec2D a, Vec2D b) {
-        Tuile temp = this.getCase(a);
+        Tile temp = this.getCase(a);
         this.setCase(a, this.getCase(b));
         this.setCase(b, temp);
     }
 
     public void merge(Vec2D a, Vec2D b) {
-        this.setCase(a, Tuile.empty());
-        this.setCase(b, Tuile.empty());
+        this.setCase(a, Tile.empty());
+        this.setCase(b, Tile.empty());
     }
 
     // Returns true if the specified vector matchs a cell on the border
@@ -555,7 +555,7 @@ public class Plateau implements Cloneable {
                     continue;
                 }
 
-                Tuile t = this.getCase(next);
+                Tile t = this.getCase(next);
                 if (t.free()) {
                     if (coudes < 2 || (path.size() > 0 && side == path.get(path.size() - 1))) {
                         // Count the shift
@@ -618,15 +618,15 @@ public class Plateau implements Cloneable {
     }
 
     public Object clone() {
-        Plateau p = null;
+        Board p = null;
         try {
-            p = (Plateau) super.clone();
+            p = (Board) super.clone();
         } catch (CloneNotSupportedException cnse) {
             cnse.printStackTrace(System.err); // Should never append because the Cloneable interface is implemented
         }
 
         p.taille = this.taille;
-        p.cases = new Tuile[this.taille + 2][this.taille + 2];
+        p.cases = new Tile[this.taille + 2][this.taille + 2];
         for (int i = 0; i < this.taille + 2; i++) {
             for (int j = 0; j < this.taille + 2; j++) {
                 p.cases[i][j] = this.cases[i][j];

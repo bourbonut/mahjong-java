@@ -1,15 +1,15 @@
-package Interface;
+package ui;
 
-import Jeu.Game;
-import Jeu.Plateau;
-import Jeu.Vec2D;
+import game.Game;
+import game.Board;
+import game.Vec2D;
 import java.text.ParseException;
 
 import java.util.*;
 
-public class GameText {
+public class TUI {
     public static void main(String[] args) {
-        Plateau p = new Plateau();
+        Board p = new Board();
         p.generateSolvableStatic();
         Game g = new Game(p);
         Scanner scan = new Scanner(System.in);
