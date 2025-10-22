@@ -116,48 +116,47 @@ public class Game {
     }
 
     // Loads a party from a file, erases the current one
-    public boolean load(String nomDuFichier) {
+    public boolean load(String fileName) {
         try {
-            BufferedReader fichier = new BufferedReader(new FileReader(nomDuFichier));
-            String ligne;
-            ligne = fichier.readLine();
-            ligne = fichier.readLine();
+            BufferedReader file = new BufferedReader(new FileReader(fileName));
+            String line;
+            line = file.readLine();
+            line = file.readLine();
             if (this.p == null)
                 this.p = new Board();
-            this.p.load(ligne);
-            ligne = fichier.readLine();
-            ligne = fichier.readLine();
-            this.available_hints = Integer.parseInt(ligne);
-            ligne = fichier.readLine();
-            Board plat;
-            if (fichier.ready()) {// false if the history is empty
+            this.p.load(line);
+            line = file.readLine();
+            line = file.readLine();
+            this.available_hints = Integer.parseInt(line);
+            line = file.readLine();
+            Board board;
+            if (file.ready()) {// false if the history is empty
                 this.history = new ArrayList<>();
                 do {
-                    plat = new Board();
-                    ligne = fichier.readLine();
-                    plat.load(ligne);
-                    this.history.add(plat);
-                } while (fichier.ready());
+                    board = new Board();
+                    line = file.readLine();
+                    board.load(line);
+                    this.history.add(board);
+                } while (file.ready());
             }
-            fichier.close();
+            file.close();
             this.s = new Solver(this.p);
 
             return true;
-
         } catch (IOException e) {
             e.printStackTrace();
             return false;
         }
     }
 
-    public Board getPlateau() {
+    public Board getBoard() {
         return this.p;
     }
 
     @Override
     public String toString() {
-        return "Left tiles: " + this.s.getOnBoard() + "   left hints: " + this.available_hints + "    history: "
-                + this.history.size() + "\n" + this.p;
+        return String.format("Left tiles: %d   left hints: %d   history: %d \n %s", s.getOnBoard(), available_hints,
+                history.size(), p.toString());
     }
 
     public int getAvailableHints() {
