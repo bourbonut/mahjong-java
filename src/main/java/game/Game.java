@@ -156,8 +156,8 @@ public class Game {
 
     @Override
     public String toString() {
-        return "Left tiles: " + this.s.getOnBoard() + "   left hints: " + this.available_hints
-                + "    history: " + this.history.size() + "\n" + this.p;
+        return "Left tiles: " + this.s.getOnBoard() + "   left hints: " + this.available_hints + "    history: "
+                + this.history.size() + "\n" + this.p;
     }
 
     public int getAvailableHints() {

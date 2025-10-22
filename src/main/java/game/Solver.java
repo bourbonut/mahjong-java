@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Random;
 
 /**
- * Solver class which solve a board step by step. It can also be used as a tool to genrate a safe solvable board.
- * In the current state, there are some boards that the solver cannot solve because it ends in a unresolvable situation
- * but they are minority cases.
+ * Solver class which solve a board step by step. It can also be used as a tool to genrate a safe solvable board. In the
+ * current state, there are some boards that the solver cannot solve because it ends in a unresolvable situation but
+ * they are minority cases.
  */
 public class Solver {
     // int random_order[]; // board iteration order, for resolutions, allows to make the generation more complicated
