@@ -55,8 +55,8 @@ public class Vec2D implements Cloneable {
         Vec2D p = null;
         try {
             p = (Vec2D) super.clone();
-        } catch (CloneNotSupportedException cnse) {
-            cnse.printStackTrace(System.err); // Should never append because the Cloneable interface is implemented
+        } catch (CloneNotSupportedException exc) {
+            exc.printStackTrace(System.err); // Should never happen because the Cloneable interface is implemented
         }
         p.x = this.x;
         p.y = this.y;

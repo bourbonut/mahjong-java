@@ -622,7 +622,7 @@ public class Board implements Cloneable {
         try {
             p = (Board) super.clone();
         } catch (CloneNotSupportedException cnse) {
-            cnse.printStackTrace(System.err); // Should never append because the Cloneable interface is implemented
+            cnse.printStackTrace(System.err); // Should never happen because the Cloneable interface is implemented
         }
 
         p.size = this.size;
