@@ -25,8 +25,8 @@ public class Majhong {
             // System.out.println("search from " + a + " to "+ b); // display input coordinates
             if (p.validMerge(a, b)) {
                 System.out.println("             -- valid move --");
-                p.setCase(a, Tile.empty());
-                p.setCase(b, Tile.empty());
+                p.setCell(a, Tile.empty());
+                p.setCell(b, Tile.empty());
             } else
                 System.out.println("      -- invalid move, retry --");
         }

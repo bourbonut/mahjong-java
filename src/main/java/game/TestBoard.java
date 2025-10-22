@@ -12,9 +12,9 @@ public class TestBoard {
         test.generateSolvableStaticLine();
         System.out.println(test.toString());
         Game g = new Game(test);
-        g.save("Sauvegarde");
+        g.save("Save");
         Game a = new Game(new Board());
-        a.load("Sauvegarde");
+        a.load("Save");
         System.out.println(a.toString());
         // System.out.print("Give a integer:");
         // Scanner scan = new Scanner(System.in);

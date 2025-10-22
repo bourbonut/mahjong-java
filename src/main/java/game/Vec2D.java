@@ -25,11 +25,11 @@ public class Vec2D implements Cloneable {
         return new Vec2D(n * this.x, n * this.y);
     }
 
-    public int[] toTable() {
-        int[] table = new int[2];
-        table[0] = this.x;
-        table[1] = this.y;
-        return table;
+    public int[] toArray() {
+        int[] array = new int[2];
+        array[0] = this.x;
+        array[1] = this.y;
+        return array;
     }
 
     // trucs de base

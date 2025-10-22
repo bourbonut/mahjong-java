@@ -156,13 +156,13 @@ public class GUI extends javax.swing.JPanel {
                 int iWidth = images[0].getWidth(null);
                 int iHeight = images[0].getHeight(null);
                 Dimension dim = this.getSize();
-                int taille = p.getTaille();
-                imgScale = new Vec2D(dim.width / taille, dim.height / taille);
-                // int xincr = dim.width/taille;
-                // int yincr = dim.height/taille;
+                int size = p.getSize();
+                imgScale = new Vec2D(dim.width / size, dim.height / size);
+                // int xincr = dim.width/size;
+                // int yincr = dim.height/size;
 
-                for (int l = 1; l <= taille; l++) {
-                    for (int c = 1; c <= taille; c++) {
+                for (int l = 1; l <= size; l++) {
+                    for (int c = 1; c <= size; c++) {
                         Tile t = p.getCase(new Vec2D(l, c));
                         if (!t.free()) {
                             g.drawImage(imageFor(t), (c - 1) * imgScale.x, (l - 1) * imgScale.y, (c) * imgScale.x,

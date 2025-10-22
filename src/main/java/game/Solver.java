@@ -10,24 +10,24 @@ import java.util.Random;
  */
 public class Solver {
     // int random_order[]; // board iteration order, for resolutions, allows to make the generation more complicated
-    Board plat;
+    Board board;
     int onBoard;
 
     public Solver(Board p) {
-        this.plat = p;
-        int taille = p.getTaille();
+        this.board = p;
+        int size = p.getSize();
 
         // compte des tuiles sur le plateau
         this.onBoard = 0;
         Vec2D pos = new Vec2D(1, 1);
-        for (pos.x = 1; pos.x <= taille; pos.x++) {
-            for (pos.y = 1; pos.y <= taille; pos.y++) {
+        for (pos.x = 1; pos.x <= size; pos.x++) {
+            for (pos.y = 1; pos.y <= size; pos.y++) {
                 if (!p.getCase(pos).free())
                     this.onBoard++;
             }
         }
         // Random rng = new Random();
-        // for (int i=0; i<taille; i++) this.random_order[i] = rng.nextInt(taille);
+        // for (int i=0; i<size; i++) this.random_order[i] = rng.nextInt(size);
     }
 
     // Search a tile couple to *pair* (for playing a move)
@@ -41,15 +41,15 @@ public class Solver {
 
     // Search a side by side tile couple to *pair*
     public Vec2D[] nextMergeNear() {
-        int size = plat.getTaille();
+        int size = board.getSize();
         Vec2D p = new Vec2D(1, 2);
         for (; p.x < size; p.x++) {
             for (p.y = 1; p.y <= size; p.y++) {
                 Vec2D near = new Vec2D(p.x, p.y - 1);
-                if (plat.getCase(near).appairable(plat.getCase(p)))
+                if (board.getCase(near).appairable(board.getCase(p)))
                     return new Vec2D[] { near, p };
                 near = new Vec2D(p.x - 1, p.y);
-                if (plat.getCase(near).appairable(plat.getCase(p)))
+                if (board.getCase(near).appairable(board.getCase(p)))
                     return new Vec2D[] { near, p };
             }
         }
@@ -58,7 +58,7 @@ public class Solver {
 
     // Find a distant tile couple to *pair* (with valid path)
     public Vec2D[] nextMergeDistant() {
-        int size = plat.getTaille();
+        int size = board.getSize();
         Vec2D[] sides = Board.sides();
         // Find a filled cell on border (adjacent to empty cell)
         Vec2D a = new Vec2D(1, 1);
@@ -69,7 +69,7 @@ public class Solver {
                 break;
 
             for (Vec2D side : sides) {
-                if (plat.getCase(a.add(side)).free()) {
+                if (board.getCase(a.add(side)).free()) {
                     // System.out.println("analyze "+ plat.getCase(a));
                     Vec2D b = (Vec2D) a.clone();
                     do {
@@ -78,7 +78,7 @@ public class Solver {
                             // System.out.println("found pair " + b);
                             // Search a path between `a` and `b`, by beginning
                             // with B (checks also that `b` is on border)
-                            if (plat.validMerge(b, a))
+                            if (board.validMerge(b, a))
                                 return new Vec2D[] { a, b };
                         }
                     } while (b != null);
@@ -94,7 +94,7 @@ public class Solver {
 
     // Old method, non optimized, unfinished to debug
     public Vec2D[] nextMergeDistant_frontier() {
-        int size = plat.getTaille();
+        int size = board.getSize();
         Vec2D[] sides = new Vec2D[] { // Arranged directions (here, anti-clockwise)
                 new Vec2D(1, 0), new Vec2D(1, 1), new Vec2D(0, 1), new Vec2D(-1, 1), new Vec2D(-1, 0),
                 new Vec2D(-1, -1), new Vec2D(0, -1), new Vec2D(1, -1), };
@@ -114,10 +114,10 @@ public class Solver {
                 // System.out.println("start at "+ p);
                 do {
                     int s = 0;
-                    boolean free = plat.getCase(next.add(sides[s++])).free();
+                    boolean free = board.getCase(next.add(sides[s++])).free();
                     while (s < sides.length) {
                         Vec2D possibility = next.add(sides[s++]);
-                        if (plat.getCase(possibility).free() != free) {
+                        if (board.getCase(possibility).free() != free) {
                             if (possibility.equals(previous))
                                 free = !free;
                             else {
@@ -137,9 +137,9 @@ public class Solver {
                     // Finds the corresponding candidate
                     for (int i = 0; i < candidats.size(); i++) {
                         Vec2D c = candidats.get(i);
-                        if (plat.getCase(c).appairable(plat.getCase(next))) {
+                        if (board.getCase(c).appairable(board.getCase(next))) {
                             // tester si il y a un chemin valide
-                            if (plat.validMerge(next, c))
+                            if (board.validMerge(next, c))
                                 return new Vec2D[] { next, c };
                         }
                     }
@@ -158,10 +158,10 @@ public class Solver {
     // trouve une case occupée par une tuile
     public Vec2D findNonFree(Vec2D start) {
         Vec2D a = (Vec2D) start.clone();
-        int size = plat.getTaille();
+        int size = board.getSize();
         for (; a.x <= size; a.x++) {
             for (; a.y <= size; a.y++) {
-                if (!plat.getCase(a).free())
+                if (!board.getCase(a).free())
                     return a;
             }
             ;
@@ -172,11 +172,11 @@ public class Solver {
 
     // Returns the tile corresponding to the one specified by coordinates
     public Vec2D findPairOf(Vec2D a, Vec2D start) {
-        int size = plat.getTaille();
+        int size = board.getSize();
         Vec2D b = new Vec2D(start.x, start.y + 1);
         for (; b.x <= size; b.x++) {
             for (; b.y <= size; b.y++) {
-                if (plat.getCase(a).appairable(plat.getCase(b)))
+                if (board.getCase(a).appairable(board.getCase(b)))
                     return b;
             }
             b.y = 1;
@@ -203,17 +203,17 @@ public class Solver {
 
     // Inspired methods by Board's ones
     public void merge(Vec2D a, Vec2D b) {
-        this.plat.merge(a, b);
+        this.board.merge(a, b);
         this.onBoard -= 2;
     }
 
     public void swap(Vec2D a, Vec2D b) {
-        this.plat.swap(a, b);
+        this.board.swap(a, b);
     }
 
     @Override
     public String toString() {
-        return this.plat.toString();
+        return this.board.toString();
     }
 
     public int getOnBoard() {
@@ -225,7 +225,7 @@ public class Solver {
         Solver s = new Solver(p);
 
         while (!s.finished()) {
-            System.out.println("\n" + s.plat);
+            System.out.println("\n" + s.board);
             // Search to remove a pair
             Vec2D[] merge = s.nextMerge();
             if (merge != null) {
