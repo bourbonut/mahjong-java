@@ -14,7 +14,6 @@ For instance:
 
 ```
 // Valid paths
-
 ...............
 ..#~~~~~#...... // no shift and empty tiles
 ...............
@@ -110,6 +109,12 @@ In `game/Tile.java`:
 
 - `all()` allows to generate an array of all tile types
 - `number()` allows to generate a array of disponibilities by tile type
+
+> [!NOTE]
+> See [https://bourbonut.github.io/projects/mahjong/](https://bourbonut.github.io/projects/mahjong/) for more information.
+
+> [!NOTE]
+> Cheatmode is a originally a bug, which was kept and added as a feature *cheatmode*. No more spoil
 
 ## Build and run
 
