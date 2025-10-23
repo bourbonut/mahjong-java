@@ -89,12 +89,12 @@ public class TUI {
             } while (askAgain);
         }
         scan.close();
-        System.out.println("!! Majhong Solved !!");
+        System.out.println("!! Mahjong Solved !!");
     }
 
     static void printBanner() {
         System.out.print(String.join("\n", "      +--------------------------------+",
-                "      |     Majhong Text Interface     |", "      +--------------------------------+", "\n"));
+                "      |     Mahjong Text Interface     |", "      +--------------------------------+", "\n"));
     }
 
     static void printHelp() {
