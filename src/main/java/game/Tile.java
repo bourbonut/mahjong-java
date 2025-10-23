@@ -17,7 +17,7 @@ public class Tile {
         return new Tile('.', '_');
     } // Returns a border tile
 
-    public boolean free() {
+    public boolean isFree() {
         return type == '.';
     } // Returns true if the tile is on the border or empty
 
@@ -116,7 +116,7 @@ public class Tile {
     }
 
     public boolean isPair(Tile other) {
-        if (this.free())
+        if (this.isFree())
             return false;
         if (this.type == 'F' && other.type == 'F')
             return true;

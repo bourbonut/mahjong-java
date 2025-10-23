@@ -6,18 +6,18 @@ import java.util.Random;
 public class Board implements Cloneable {
 
     // Board cells with tiles and border
-    private Tile[][] cases;
+    private Tile[][] cells;
     // Random number
     private Random rng;
     private int SIZE = 12;
 
     public Board() {
-        this.cases = new Tile[SIZE + 2][SIZE + 2]; // 12 + 2 => 2 for the border
+        this.cells = new Tile[SIZE + 2][SIZE + 2]; // 12 + 2 => 2 for the border
         this.rng = new Random();
     }
 
     public void load(String str) {
-        this.cases = new Tile[SIZE + 2][SIZE + 2];
+        this.cells = new Tile[SIZE + 2][SIZE + 2];
         this.generateBorder();
         String s;
         int i = 1; // Index of the element
@@ -25,9 +25,9 @@ public class Board implements Cloneable {
             for (int col = 1; col <= SIZE; col++) {
                 s = str.substring(i, i + 2);
                 if (s.equals("..")) {
-                    this.cases[row][col] = Tile.empty();
+                    this.cells[row][col] = Tile.empty();
                 } else {
-                    this.cases[row][col] = new Tile(s.charAt(0), (char) Integer.parseInt(s.substring(1)));
+                    this.cells[row][col] = new Tile(s.charAt(0), (char) Integer.parseInt(s.substring(1)));
                 }
                 i += 3; // to skip "XX," where XX can be R9 for instance
             }
@@ -39,7 +39,7 @@ public class Board implements Cloneable {
         String str = "[";
         for (int row = 1; row <= SIZE; row++) {
             for (int col = 1; col <= SIZE; col++) {
-                str += this.cases[row][col] + ",";
+                str += this.cells[row][col] + ",";
             }
         }
         str += "]";
@@ -60,7 +60,7 @@ public class Board implements Cloneable {
                     index = rng.nextInt(types.length);
                 } while (disponibilites[index] <= 0);
 
-                this.cases[row][col] = types[index];
+                this.cells[row][col] = types[index];
                 disponibilites[index]--;
             }
         }
@@ -71,14 +71,14 @@ public class Board implements Cloneable {
     public void generateBorder() {
         Tile border = Tile.border();
         for (int i = 0; i < SIZE + 2; i++) {
-            this.cases[0][i] = border;
+            this.cells[0][i] = border;
         }
         for (int i = 0; i < SIZE + 2; i++) {
-            this.cases[SIZE + 1][i] = border;
+            this.cells[SIZE + 1][i] = border;
         }
         for (int i = 1; i <= SIZE; i++) {
-            this.cases[i][0] = border;
-            this.cases[i][SIZE + 1] = border;
+            this.cells[i][0] = border;
+            this.cells[i][SIZE + 1] = border;
         }
     }
 
@@ -94,32 +94,28 @@ public class Board implements Cloneable {
         // int solvedIteration = 0;
         while (!s.finished()) { // Use a solver to solve the game
 
-            // cherche a retirer une paire
+            // Search for removing a pair
             Vec2D[] merge = s.nextMerge();
             if (merge != null) {
                 s.merge(merge[0], merge[1]);
-                // solvedIteration++;
             } else {
-                // System.out.println("No solution after " + solvedIteration + " steps, changed board");
                 // No available pair, make it one
                 merge = s.findPair();
                 // Take a filled cell on next to one of tiles
                 // Note: It does not make board hard to solve (pairs are adjacents)
                 for (Vec2D side : Board.sides()) {
                     Vec2D near = merge[0].add(side);
-                    if (!this.getCase(near).free()) {
+                    if (!this.getCell(near).isFree()) {
                         // Swap the found cell with the second pair
                         this.swap(near, merge[1]);
                         s.swap(near, merge[1]);
-                        // System.out.println(" swap " + near + " " + merge[1]);
                         break;
                     }
                     near = merge[1].add(side);
-                    if (!this.getCase(near).free()) {
+                    if (!this.getCell(near).isFree()) {
                         // Swap the found cell with the second pair
                         this.swap(near, merge[0]);
                         s.swap(near, merge[0]);
-                        // System.out.println(" swap " + near + " " + merge[0]);
                         break;
                     }
                 }
@@ -130,7 +126,7 @@ public class Board implements Cloneable {
     // Build a board with the line method
     public void generateSolvableStaticLine() {
         Tile[] types = Tile.all(); // Tile type array
-        int[] disponibilites = Tile.number(); // Disponibility array given specified tile type
+        int[] disponibilities = Tile.number(); // Disponibilities given specified tile type
 
         // Current position courante of the first placed tile
         Vec2D pos;
@@ -138,42 +134,42 @@ public class Board implements Cloneable {
         Vec2D posPair;
         int[] coords;
 
-        ArrayList<Vec2D> inserer = new ArrayList<>();
+        ArrayList<Vec2D> insert = new ArrayList<>();
         int index;
         int direction;
-        int ligne = rng.nextInt(SIZE) + 1;
-        int colonne = rng.nextInt(SIZE) + 1;
+        int row = rng.nextInt(SIZE) + 1;
+        int col = rng.nextInt(SIZE) + 1;
 
         // First placed tile
         index = rng.nextInt(types.length);
-        this.cases[ligne][colonne] = types[index];
-        disponibilites[index]--;
+        this.cells[row][col] = types[index];
+        disponibilities[index]--;
 
-        pos = new Vec2D(ligne, colonne);
-        inserer.add(pos);
+        pos = new Vec2D(row, col);
+        insert.add(pos);
 
         // Second tile placement
         direction = this.generatingFirstDirection(pos);
         posPair = this.generatingFirstMovement(pos, direction);
         coords = posPair.toArray();
-        this.cases[coords[0]][coords[1]] = types[index];
-        index = this.disponibilities(index, disponibilites);
-        disponibilites[index]--;
-        inserer.add(posPair);
+        this.cells[coords[0]][coords[1]] = types[index];
+        index = this.disponibilities(index, disponibilities);
+        disponibilities[index]--;
+        insert.add(posPair);
 
         int[] posAndDir = new int[3];
 
         for (int i = 1; i < 72; i++) {
             do {// Random generation of a available tile
                 index = rng.nextInt(types.length);
-            } while (disponibilites[index] <= 0);
+            } while (disponibilities[index] <= 0);
 
-            posAndDir = this.generatingNewPosition(inserer);
+            posAndDir = this.generatingNewPosition(insert);
 
             // If the random choice does not allow to fill the two last cells,
             // it restarts until it works
             if (posAndDir.length == 1) {
-                this.cases = new Tile[SIZE + 2][SIZE + 2];
+                this.cells = new Tile[SIZE + 2][SIZE + 2];
                 this.generateSolvableStaticLine();
                 break;
             }
@@ -181,17 +177,17 @@ public class Board implements Cloneable {
             pos = new Vec2D(posAndDir[0], posAndDir[1]);
             direction = posAndDir[2];
 
-            this.cases[pos.x][pos.y] = types[index];
-            disponibilites[index]--;
+            this.cells[pos.x][pos.y] = types[index];
+            disponibilities[index]--;
 
-            index = this.disponibilities(index, disponibilites);
+            index = this.disponibilities(index, disponibilities);
 
             posPair = this.generatingEvenPosition(pos, direction);
-            this.cases[posPair.x][posPair.y] = types[index];
-            disponibilites[index]--;
+            this.cells[posPair.x][posPair.y] = types[index];
+            disponibilities[index]--;
 
-            inserer.add(pos);
-            inserer.add(posPair);
+            insert.add(pos);
+            insert.add(posPair);
         }
         // Generation of a border
         this.generateBorder();
@@ -285,7 +281,7 @@ public class Board implements Cloneable {
 
     // Returns true if filled cells around the (non-empty) position exist
     boolean checkingAroundCase(Vec2D pos, int direction) {
-        if (this.getCase(pos) != null) {
+        if (this.getCell(pos) != null) {
             return false;
         }
         Vec2D sides[] = Board.sides();
@@ -298,7 +294,7 @@ public class Board implements Cloneable {
         boolean condition = false;
         while (i < 4 && !condition) {
             next = pos.add(sides[i]);
-            if (this.getCase(next) != null) {
+            if (this.getCell(next) != null) {
                 condition = true;
             } else {
                 i++;
@@ -365,7 +361,7 @@ public class Board implements Cloneable {
                 rand = rng.nextInt(possibilites.size());
                 next = pos.add(sides[possibilites.get(rand)]);
                 possibilites.remove(rand);
-                condition = (this.getCase(next) == null && !this.belongBorder(next));
+                condition = (this.getCell(next) == null && !this.belongBorder(next));
             }
             if (condition) {
                 direction = this.generatingNewDirection(next);
@@ -413,11 +409,11 @@ public class Board implements Cloneable {
             next = pos.add(sides[direction]);
             while (!this.belongBorder(next) && !(condition1 && condition2)) {
                 // True if filled cell
-                if (this.cases[next.x][next.y] != null) {
+                if (this.cells[next.x][next.y] != null) {
                     condition1 = true;
                 }
                 // True if empty cell
-                if (this.cases[next.x][next.y] == null) {
+                if (this.cells[next.x][next.y] == null) {
                     condition2 = true;
                     // If an empty cell exists around an empty cell, condition 1 is valid
                     if (this.checkingAroundCase(next, direction)) {
@@ -454,9 +450,9 @@ public class Board implements Cloneable {
                 pas = distance.get(iPas);
                 distance.remove(iPas);
                 next = pos.add(sides[direction].mul(pas));
-            } while (!this.checkingAroundCase(next, direction) && this.getCase(next) == null);
+            } while (!this.checkingAroundCase(next, direction) && this.getCell(next) == null);
 
-            if (this.getCase(next) == null) {
+            if (this.getCell(next) == null) {
                 posPair = next;
                 condition = true;
             } else {
@@ -465,11 +461,11 @@ public class Board implements Cloneable {
                     switch (i) {
                         case 0:
                             posPair = next.add(sides[direction].mul(-1));
-                            condition = (this.getCase(posPair) == null && !this.belongBorder(posPair));
+                            condition = (this.getCell(posPair) == null && !this.belongBorder(posPair));
                             break;
                         case 1:
                             posPair = next.add(sides[direction]);
-                            condition = (this.getCase(posPair) == null && !this.belongBorder(posPair));
+                            condition = (this.getCell(posPair) == null && !this.belongBorder(posPair));
                             break;
                     }
                     i++;
@@ -484,12 +480,12 @@ public class Board implements Cloneable {
         return new Vec2D[] { new Vec2D(-1, 0), new Vec2D(1, 0), new Vec2D(0, 1), new Vec2D(0, -1), };
     }
 
-    public Tile getCase(Vec2D position) {
-        return this.cases[position.x][position.y];
+    public Tile getCell(Vec2D position) {
+        return this.cells[position.x][position.y];
     }
 
-    public void setCell(Vec2D position, Tile toset) {
-        this.cases[position.x][position.y] = toset;
+    public void setCell(Vec2D position, Tile toSet) {
+        this.cells[position.x][position.y] = toSet;
     }
 
     public int getSize() {
@@ -498,8 +494,8 @@ public class Board implements Cloneable {
 
     // Swap two tile
     public void swap(Vec2D a, Vec2D b) {
-        Tile temp = this.getCase(a);
-        this.setCell(a, this.getCase(b));
+        Tile temp = this.getCell(a);
+        this.setCell(a, this.getCell(b));
         this.setCell(b, temp);
     }
 
@@ -518,10 +514,9 @@ public class Board implements Cloneable {
     public boolean validMerge(Vec2D a, Vec2D b) {
         // Checks if the tiles are equivalent
         // verification de si les tuiles se correspondent
-        if (!this.getCase(a).isPair(this.getCase(b))) {
+        if (!this.getCell(a).isPair(this.getCell(b))) {
             return false;
         }
-        // System.out.println("search");
 
         // Possible directions
         Vec2D sides[] = Board.sides();
@@ -554,8 +549,8 @@ public class Board implements Cloneable {
                     continue;
                 }
 
-                Tile t = this.getCase(next);
-                if (t.free()) {
+                Tile t = this.getCell(next);
+                if (t.isFree()) {
                     if (coudes < 2 || (path.size() > 0 && side == path.get(path.size() - 1))) {
                         // Count the shift
                         if (path.size() > 0 && side != path.get(path.size() - 1)) {
@@ -602,7 +597,7 @@ public class Board implements Cloneable {
             String l = (row < 10 ? "0" : "") + row;
             display += l + " | ";
             for (int col = 1; col <= SIZE; col++) {
-                display += this.cases[row][col].toString() + " ";
+                display += this.cells[row][col].toString() + " ";
             }
             display += "| " + l + "\n";
         }
@@ -620,10 +615,10 @@ public class Board implements Cloneable {
         }
 
         p.SIZE = this.SIZE;
-        p.cases = new Tile[this.SIZE + 2][this.SIZE + 2];
+        p.cells = new Tile[this.SIZE + 2][this.SIZE + 2];
         for (int i = 0; i < this.SIZE + 2; i++) {
             for (int j = 0; j < this.SIZE + 2; j++) {
-                p.cases[i][j] = this.cases[i][j];
+                p.cells[i][j] = this.cells[i][j];
             }
         }
         // We returns a clone

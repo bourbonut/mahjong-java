@@ -8,7 +8,6 @@ import java.util.ArrayList;
  * they are minority cases.
  */
 public class Solver {
-    // int random_order[]; // board iteration order, for resolutions, allows to make the generation more complicated
     Board board;
     int onBoard;
 
@@ -16,17 +15,15 @@ public class Solver {
         this.board = p;
         int size = p.getSize();
 
-        // compte des tuiles sur le plateau
+        // Count tiles on the board
         this.onBoard = 0;
         Vec2D pos = new Vec2D(1, 1);
         for (pos.x = 1; pos.x <= size; pos.x++) {
             for (pos.y = 1; pos.y <= size; pos.y++) {
-                if (!p.getCase(pos).free())
+                if (!p.getCell(pos).isFree())
                     this.onBoard++;
             }
         }
-        // Random rng = new Random();
-        // for (int i=0; i<size; i++) this.random_order[i] = rng.nextInt(size);
     }
 
     // Search a tile couple to *pair* (for playing a move)
@@ -45,10 +42,10 @@ public class Solver {
         for (; p.x < size; p.x++) {
             for (p.y = 1; p.y <= size; p.y++) {
                 Vec2D near = new Vec2D(p.x, p.y - 1);
-                if (board.getCase(near).isPair(board.getCase(p)))
+                if (board.getCell(near).isPair(board.getCell(p)))
                     return new Vec2D[] { near, p };
                 near = new Vec2D(p.x - 1, p.y);
-                if (board.getCase(near).isPair(board.getCase(p)))
+                if (board.getCell(near).isPair(board.getCell(p)))
                     return new Vec2D[] { near, p };
             }
         }
@@ -66,22 +63,18 @@ public class Solver {
             a = findNonFree(a);
             if (a == null)
                 break;
-
             for (Vec2D side : sides) {
-                if (board.getCase(a.add(side)).free()) {
-                    // System.out.println("analyze "+ plat.getCase(a));
-                    Vec2D b = (Vec2D) a.clone();
+                if (board.getCell(a.add(side)).isFree()) {
+                    Vec2D b = a.clone();
                     do {
                         b = findPairOf(a, b);
                         if (b != null) {
-                            // System.out.println("found pair " + b);
                             // Search a path between `a` and `b`, by beginning
                             // with B (checks also that `b` is on border)
                             if (board.validMerge(b, a))
                                 return new Vec2D[] { a, b };
                         }
                     } while (b != null);
-
                     break;
                 }
             }
@@ -94,7 +87,8 @@ public class Solver {
     // Old method, non optimized, unfinished to debug
     public Vec2D[] nextMergeDistant_frontier() {
         int size = board.getSize();
-        Vec2D[] sides = new Vec2D[] { // Arranged directions (here, anti-clockwise)
+        // Arranged directions (here, anti-clockwise)
+        Vec2D[] sides = new Vec2D[] {
                 new Vec2D(1, 0), new Vec2D(1, 1), new Vec2D(0, 1), new Vec2D(-1, 1), new Vec2D(-1, 0),
                 new Vec2D(-1, -1), new Vec2D(0, -1), new Vec2D(1, -1), };
         ArrayList<Vec2D> candidats = new ArrayList<>();
@@ -110,13 +104,12 @@ public class Solver {
                 candidats = new ArrayList<>();
                 // Follow the free/occupied border, the loop does not follow if
                 // not on the border
-                // System.out.println("start at "+ p);
                 do {
                     int s = 0;
-                    boolean free = board.getCase(next.add(sides[s++])).free();
+                    boolean free = board.getCell(next.add(sides[s++])).isFree();
                     while (s < sides.length) {
                         Vec2D possibility = next.add(sides[s++]);
-                        if (board.getCase(possibility).free() != free) {
+                        if (board.getCell(possibility).isFree() != free) {
                             if (possibility.equals(previous))
                                 free = !free;
                             else {
@@ -136,13 +129,13 @@ public class Solver {
                     // Finds the corresponding candidate
                     for (int i = 0; i < candidats.size(); i++) {
                         Vec2D c = candidats.get(i);
-                        if (board.getCase(c).isPair(board.getCase(next))) {
+                        if (board.getCell(c).isPair(board.getCell(next))) {
                             // tester si il y a un chemin valide
                             if (board.validMerge(next, c))
                                 return new Vec2D[] { next, c };
                         }
                     }
-                    // pas d'appairage valide, passer à la suite
+                    // No valid pair, skip
                     candidats.add(next);
 
                 } while (!next.equals(p));
@@ -154,16 +147,14 @@ public class Solver {
     }
 
     // Finds a occupied cell by a tile
-    // trouve une case occupée par une tuile
     public Vec2D findNonFree(Vec2D start) {
         Vec2D a = (Vec2D) start.clone();
         int size = board.getSize();
         for (; a.x <= size; a.x++) {
             for (; a.y <= size; a.y++) {
-                if (!board.getCase(a).free())
+                if (!board.getCell(a).isFree())
                     return a;
             }
-            ;
             a.y = 1;
         }
         return null;
@@ -175,12 +166,11 @@ public class Solver {
         Vec2D b = new Vec2D(start.x, start.y + 1);
         for (; b.x <= size; b.x++) {
             for (; b.y <= size; b.y++) {
-                if (board.getCase(a).isPair(board.getCase(b)))
+                if (board.getCell(a).isPair(board.getCell(b)))
                     return b;
             }
             b.y = 1;
         }
-
         return null;
     }
 
@@ -200,7 +190,7 @@ public class Solver {
         return onBoard <= 0;
     }
 
-    // Inspired methods by Board's ones
+    // Convinient method inspired by `Board.merge`
     public void merge(Vec2D a, Vec2D b) {
         this.board.merge(a, b);
         this.onBoard -= 2;
@@ -219,33 +209,28 @@ public class Solver {
         return this.onBoard;
     }
 
-    // Testing function: display the resolution steps of a `p` board, stops in failing case
-    public static void testAutoSolve(Board p) {
-        Solver s = new Solver(p);
+    // For testing purpose: display the resolution steps of a board, stops in failing case
+    public static void main(String[] args) {
+        System.out.println("test Solver.main ...\n");
+        Board board = new Board();
 
-        while (!s.finished()) {
-            System.out.println("\n" + s.board);
+        board.generateSolvableStatic();
+        System.out.println("Starting board:\n" + board + "\n");
+
+        Solver solver = new Solver(board);
+
+        while (!solver.finished()) {
+            System.out.println("\n" + solver.board);
             // Search to remove a pair
-            Vec2D[] merge = s.nextMerge();
+            Vec2D[] merge = solver.nextMerge();
             if (merge != null) {
-                System.out.println(" >> couple trouvé: " + merge[0] + " " + merge[1]);
-                s.merge(merge[0], merge[1]);
+                System.out.println(" >> Pair found: " + merge[0] + " " + merge[1]);
+                solver.merge(merge[0], merge[1]);
             } else {
-                System.out.println("\npas de solution trouvée.");
+                System.out.println("\nNo solution found.");
                 return;
             }
         }
-        System.out.println("\nplateau résolu.");
-    }
-
-    public static void main(String[] args) {
-        System.out.println("test Solver.main ...\n");
-        Board p = new Board();
-
-        // p.generateRandom();
-        p.generateSolvableStatic();
-        // p.generateSolvableStaticLine();
-        System.out.println("plateau depart:\n" + p + "\n");
-        testAutoSolve(p);
+        System.out.println("\nBoard solved.");
     }
 }

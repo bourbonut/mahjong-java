@@ -173,8 +173,8 @@ public class GUI extends JPanel {
                         (dim.height - imgScale.y * BOARD_SIZE) / 2);
                 for (int row = 1; row <= BOARD_SIZE; row++) {
                     for (int col = 1; col <= BOARD_SIZE; col++) {
-                        Tile tile = board.getCase(new Vec2D(row, col));
-                        if (!tile.free()) {
+                        Tile tile = board.getCell(new Vec2D(row, col));
+                        if (!tile.isFree()) {
                             g.drawImage(imageFor(tile), (col - 1) * imgScale.x + offset.x,
                                     (row - 1) * imgScale.y + offset.y, col * imgScale.x + offset.x,
                                     row * imgScale.y + offset.y, 0, 0, IMG_WIDTH, IMG_HEIGHT, null);
