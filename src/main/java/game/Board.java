@@ -160,7 +160,7 @@ public class Board implements Cloneable {
         int[] posAndDir = new int[3];
 
         for (int i = 1; i < 72; i++) {
-            do {// Random generation of a available tile
+            do { // Random generation of a available tile
                 index = rng.nextInt(types.length);
             } while (disponibilities[index] <= 0);
 
@@ -528,7 +528,7 @@ public class Board implements Cloneable {
         // path.add(-1);
         int side = 0; // Testing direction
         Vec2D pos = a; // Current position
-        int coudes = 0; // Number of shifts in the current path
+        int shifts = 0; // Number of shifts in the current path
 
         while (true) {
             boolean no_side_found = true;
@@ -537,7 +537,7 @@ public class Board implements Cloneable {
             for (int i = side; i < sides.length; i++) {
                 Vec2D next = pos.add(sides[i]);
                 int lastdir = path.size() - 1;
-                if (next.equals(b) && (coudes < 2 || (coudes <= 2 && lastdir >= 0 && i == path.get(lastdir)))) {
+                if (next.equals(b) && (shifts < 2 || (shifts <= 2 && lastdir >= 0 && i == path.get(lastdir)))) {
                     return true;
                 }
             }
@@ -551,10 +551,10 @@ public class Board implements Cloneable {
 
                 Tile t = this.getCell(next);
                 if (t.isFree()) {
-                    if (coudes < 2 || (path.size() > 0 && side == path.get(path.size() - 1))) {
+                    if (shifts < 2 || (path.size() > 0 && side == path.get(path.size() - 1))) {
                         // Count the shift
                         if (path.size() > 0 && side != path.get(path.size() - 1)) {
-                            coudes++;
+                            shifts++;
                         }
                         // Stacks the new direction
                         path.add(side);
@@ -575,17 +575,15 @@ public class Board implements Cloneable {
                     side = path.get(last);
                     pos = pos.sub(sides[side]);
                     path.remove(last);
-                    // decompter le coude
+                    // Uncounts the shift
                     if (path.size() > 0 && side != path.get(path.size() - 1)) {
-                        coudes--;
+                        shifts--;
                     }
 
                     side++; // Checks if the next side
                 } while (side >= sides.length);
             }
         }
-
-        // return false; // If the stack is empty, no path is possible
     }
 
     @Override

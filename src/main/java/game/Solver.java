@@ -88,9 +88,8 @@ public class Solver {
     public Vec2D[] nextMergeDistant_frontier() {
         int size = board.getSize();
         // Arranged directions (here, anti-clockwise)
-        Vec2D[] sides = new Vec2D[] {
-                new Vec2D(1, 0), new Vec2D(1, 1), new Vec2D(0, 1), new Vec2D(-1, 1), new Vec2D(-1, 0),
-                new Vec2D(-1, -1), new Vec2D(0, -1), new Vec2D(1, -1), };
+        Vec2D[] sides = new Vec2D[] { new Vec2D(1, 0), new Vec2D(1, 1), new Vec2D(0, 1), new Vec2D(-1, 1),
+                new Vec2D(-1, 0), new Vec2D(-1, -1), new Vec2D(0, -1), new Vec2D(1, -1), };
         ArrayList<Vec2D> candidats = new ArrayList<>();
 
         // Finds hole borders
