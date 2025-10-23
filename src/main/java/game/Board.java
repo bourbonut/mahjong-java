@@ -528,7 +528,7 @@ public class Board implements Cloneable {
         int shifts = 0; // Number of shifts in the current path
 
         while (true) {
-            boolean no_side_found = true;
+            boolean noSideFound = true;
 
             // Checks if B is in the nearest neighbors
             for (int i = side; i < sides.length; i++) {
@@ -557,12 +557,12 @@ public class Board implements Cloneable {
                         path.add(side);
                         pos = next;
                         side = 0;
-                        no_side_found = false;
+                        noSideFound = false;
                         break;
                     }
                 }
             }
-            if (no_side_found) {
+            if (noSideFound) {
                 do {
                     if (path.size() <= 0) {
                         return false;
