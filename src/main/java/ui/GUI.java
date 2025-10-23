@@ -395,7 +395,8 @@ public class GUI extends JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void hintButtonActionPerformed(ActionEvent evt) {// GEN-FIRST:event_hintButtonActionPerformed
-        this.hint = game.hint();
+        if (this.hint == null)
+            this.hint = game.hint();
         gameDisplayUpdate();
     }// GEN-LAST:event_hintButtonActionPerformed
 
