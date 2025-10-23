@@ -519,8 +519,9 @@ public class Board implements Cloneable {
         // Possible directions
         Vec2D sides[] = Board.sides();
 
-        // Taken path to reach to the current step. It works like a stack
-        ArrayList<Integer> path = new ArrayList<>(); // Taken direction array to reach to each step
+        // Path taken to reach to the current step. It works like a stack.
+        // Array of directions taken to reach to each step
+        ArrayList<Integer> path = new ArrayList<>();
 
         // Variables of the current step
         int side = 0; // Testing direction
