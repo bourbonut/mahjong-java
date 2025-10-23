@@ -4,6 +4,7 @@ import game.Game;
 import game.Board;
 import game.Vec2D;
 
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class TUI {
@@ -22,9 +23,15 @@ public class TUI {
             boolean askAgain = true;
             do {
                 System.out.print("[l1 c1 l2 c2]> ");
-                String coords[] = scan.nextLine().strip().split(" ");
+                String[] coords;
+                try {
+                    coords = scan.nextLine().strip().split(" ");
+                } catch (NoSuchElementException exc) { // CTRL + D
+                    scan.close();
+                    return;
+                }
                 switch (coords[0]) {
-                    case "m":
+                    case "m": // move
                         if (coords.length != 5)
                             break;
                         try {
@@ -40,27 +47,27 @@ public class TUI {
                             continue;
                         }
                         break;
-                    case "r":
+                    case "r": // go back n steps
                         int n = Integer.parseInt(coords[1]);
                         if (!game.revert(n))
                             System.out.println("Impossible to go back for the moment");
                         else
                             askAgain = false;
                         break;
-                    case "h":
+                    case "h": // hint
                         Vec2D[] h = game.hint();
                         if (h == null)
                             System.out.println("More hints for the abusive freeloaders XD");
                         else
                             System.out.println(String.format("%d %d with %d %d -- %s", h[0].x, h[0].y, h[1].x, h[1].y,
                                     "This hint is not necessary the best one ..."));
-                    case "s":
+                    case "s": // save
                         if (coords.length != 2)
                             break;
                         game.save(coords[1]);
                         System.out.println("Saved");
                         break;
-                    case "l":
+                    case "l": // load
                         if (coords.length != 2)
                             break;
                         if (game.load(coords[1])) {
@@ -69,10 +76,10 @@ public class TUI {
                         } else
                             System.out.println("Error");
                         break;
-                    case "q":
+                    case "q": // quit
                         scan.close();
                         return;
-                    case "?":
+                    case "?": // help
                         printHelp();
                         break;
                     default:
