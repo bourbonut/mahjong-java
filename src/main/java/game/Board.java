@@ -85,11 +85,11 @@ public class Board implements Cloneable {
     // Generates a solvable board from a specified random board
     public void generateSolvableStatic() {
         this.generateRandom();
-        this.correct();
+        this.fixBoard();
     }
 
     // Fix the board to be solvable
-    public void correct() {
+    public void fixBoard() {
         Solver s = new Solver((Board) this.clone());
         // int solvedIteration = 0;
         while (!s.finished()) { // Use a solver to solve the game
