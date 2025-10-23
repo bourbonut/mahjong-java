@@ -14,6 +14,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -150,7 +151,8 @@ public class GUI extends JPanel {
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
 
-                // to edit this code, UI designer > JPanel > customize-code
+                // In *Netbeans* software, to edit this code:
+                // UI designer > JPanel > customize-code
 
                 Board board = game.getBoard();
                 int iWidth = images[0].getWidth(null);
@@ -423,6 +425,10 @@ public class GUI extends JPanel {
             else {
                 Vec2D second = new Vec2D(evt.getY() / imgScale.y + 1, evt.getX() / imgScale.x + 1);
                 game.merge(selection, second);
+                if (hint != null && ((hint[0].equals(selection) && hint[1].equals(second))
+                        || (hint[0].equals(second) && hint[1].equals(selection)))) {
+                    hint = null;
+                }
                 selection = null;
             }
         }
