@@ -167,31 +167,28 @@ public class GUI extends JPanel {
                 boolean cW = ((qW * IMG_HEIGHT / IMG_WIDTH) * BOARD_SIZE) <= dim.width;
                 boolean cH = ((qH * IMG_WIDTH / IMG_HEIGHT) * BOARD_SIZE) <= dim.height;
                 int q = cW && cH ? Math.min(qW, qH) : cH ? qH : qW;
-                imgScale = new Vec2D(
-                    Math.min(q == qW ? qW: qH * IMG_WIDTH / IMG_HEIGHT, MAX_IMG_SCALE.x),
-                    Math.min(q == qH ? qH: qW * IMG_HEIGHT / IMG_WIDTH, MAX_IMG_SCALE.y)
-                );
-                offset = new Vec2D(
-                    (dim.width - imgScale.x * BOARD_SIZE) / 2,
-                    (dim.height - imgScale.y * BOARD_SIZE) / 2
-                );
+                imgScale = new Vec2D(Math.min(q == qW ? qW : qH * IMG_WIDTH / IMG_HEIGHT, MAX_IMG_SCALE.x),
+                        Math.min(q == qH ? qH : qW * IMG_HEIGHT / IMG_WIDTH, MAX_IMG_SCALE.y));
+                offset = new Vec2D((dim.width - imgScale.x * BOARD_SIZE) / 2,
+                        (dim.height - imgScale.y * BOARD_SIZE) / 2);
                 for (int row = 1; row <= BOARD_SIZE; row++) {
                     for (int col = 1; col <= BOARD_SIZE; col++) {
                         Tile tile = board.getCase(new Vec2D(row, col));
                         if (!tile.free()) {
-                            g.drawImage(imageFor(tile), (col - 1) * imgScale.x + offset.x, (row - 1) * imgScale.y + offset.y,
-                                    col * imgScale.x + offset.x, row * imgScale.y + offset.y, 0, 0, IMG_WIDTH, IMG_HEIGHT, null);
+                            g.drawImage(imageFor(tile), (col - 1) * imgScale.x + offset.x,
+                                    (row - 1) * imgScale.y + offset.y, col * imgScale.x + offset.x,
+                                    row * imgScale.y + offset.y, 0, 0, IMG_WIDTH, IMG_HEIGHT, null);
                         }
                     }
                 }
 
                 if (selection != null) {
                     g.setColor(new Color(0.9f, 0.2f, 0.1f));
-                    g.drawRoundRect((selection.y - 1) * imgScale.x + offset.x, (selection.x - 1) * imgScale.y + offset.y, imgScale.x,
-                            imgScale.y, 2, 5);
+                    g.drawRoundRect((selection.y - 1) * imgScale.x + offset.x,
+                            (selection.x - 1) * imgScale.y + offset.y, imgScale.x, imgScale.y, 2, 5);
                     g.setColor(new Color(0.8f, 0.3f, 0.1f));
-                    g.drawRoundRect((selection.y - 1) * imgScale.x + offset.x - 1, (selection.x - 1) * imgScale.y + offset.y - 1,
-                            imgScale.x + 2, imgScale.y + 2, 3, 6);
+                    g.drawRoundRect((selection.y - 1) * imgScale.x + offset.x - 1,
+                            (selection.x - 1) * imgScale.y + offset.y - 1, imgScale.x + 2, imgScale.y + 2, 3, 6);
                 }
 
                 g.setFont(new Font("Dialog", Font.PLAIN, 18));
@@ -217,10 +214,10 @@ public class GUI extends JPanel {
 
                 if (hint != null) {
                     g.setColor(new Color(1f, 1f, 0.2f));
-                    g.drawRoundRect((hint[0].y - 1) * imgScale.x + offset.x, (hint[0].x - 1) * imgScale.y + offset.y, imgScale.x, imgScale.y,
-                            2, 5);
-                    g.drawRoundRect((hint[1].y - 1) * imgScale.x + offset.x, (hint[1].x - 1) * imgScale.y + offset.y, imgScale.x, imgScale.y,
-                            2, 5);
+                    g.drawRoundRect((hint[0].y - 1) * imgScale.x + offset.x, (hint[0].x - 1) * imgScale.y + offset.y,
+                            imgScale.x, imgScale.y, 2, 5);
+                    g.drawRoundRect((hint[1].y - 1) * imgScale.x + offset.x, (hint[1].x - 1) * imgScale.y + offset.y,
+                            imgScale.x, imgScale.y, 2, 5);
                 }
             }
         };
@@ -371,10 +368,10 @@ public class GUI extends JPanel {
         int totalImageWidth = 3 * IMG_WIDTH * BOARD_SIZE / 4; // must be greater or equal to 427, due to layout
         int totalImageHeight = 3 * IMG_HEIGHT * BOARD_SIZE / 4;
         canvas.setLayout(canvasLayout);
-        canvasLayout.setHorizontalGroup(
-                canvasLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGap(0, totalImageWidth, Short.MAX_VALUE));
-        canvasLayout.setVerticalGroup(
-                canvasLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGap(0, totalImageHeight, Short.MAX_VALUE));
+        canvasLayout.setHorizontalGroup(canvasLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGap(0,
+                totalImageWidth, Short.MAX_VALUE));
+        canvasLayout.setVerticalGroup(canvasLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGap(0,
+                totalImageHeight, Short.MAX_VALUE));
 
         GroupLayout layout = new GroupLayout(this);
         this.setLayout(layout);
@@ -437,9 +434,11 @@ public class GUI extends JPanel {
         // Left click: select
         if (evt.getButton() == MouseEvent.BUTTON1) {
             if (selection == null)
-                selection = new Vec2D((evt.getY() - offset.y) / imgScale.y + 1, (evt.getX() - offset.x) / imgScale.x + 1);
+                selection = new Vec2D((evt.getY() - offset.y) / imgScale.y + 1,
+                        (evt.getX() - offset.x) / imgScale.x + 1);
             else {
-                Vec2D second = new Vec2D((evt.getY() - offset.y) / imgScale.y + 1, (evt.getX() - offset.x) / imgScale.x + 1);
+                Vec2D second = new Vec2D((evt.getY() - offset.y) / imgScale.y + 1,
+                        (evt.getX() - offset.x) / imgScale.x + 1);
                 game.merge(selection, second);
                 if (hint != null && ((hint[0].equals(selection) && hint[1].equals(second))
                         || (hint[0].equals(second) && hint[1].equals(selection)))) {
