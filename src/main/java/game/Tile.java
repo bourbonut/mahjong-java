@@ -26,8 +26,6 @@ public class Tile {
     public String toString() {
         if (type == '.')
             return "..";
-        // else if (type == 'F') return "F ";
-        // else if (type == 'S') return "S ";
         else if (0 <= (int) id && (int) id < 10)
             return "" + type + (int) id;
         else
@@ -43,59 +41,57 @@ public class Tile {
         if (getClass() != obj.getClass())
             return false;
         final Tile other = (Tile) obj;
-        if (this.type != other.type)
-            return false;
-        if (this.id != other.id)
+        if (this.type != other.type || this.id != other.id)
             return false;
         return true;
     }
 
     // Returns the array of different tiles
     public static Tile[] all() {
-        Tile[] liste = new Tile[3 * 9 + 4 + 3 + 4 + 4];
+        Tile[] array = new Tile[3 * 9 + 4 + 3 + 4 + 4];
         int i = 0;
         for (int j = 1; j <= 9; j++)
-            liste[i++] = new Tile('R', (char) j);
+            array[i++] = new Tile('R', (char) j);
         for (int j = 1; j <= 9; j++)
-            liste[i++] = new Tile('B', (char) j);
+            array[i++] = new Tile('B', (char) j);
         for (int j = 1; j <= 9; j++)
-            liste[i++] = new Tile('C', (char) j);
+            array[i++] = new Tile('C', (char) j);
 
         for (int j = 1; j <= 4; j++)
-            liste[i++] = new Tile('V', (char) j);
+            array[i++] = new Tile('V', (char) j);
         for (int j = 1; j <= 3; j++)
-            liste[i++] = new Tile('D', (char) j);
+            array[i++] = new Tile('D', (char) j);
 
         for (int j = 1; j <= 4; j++)
-            liste[i++] = new Tile('F', (char) j);
+            array[i++] = new Tile('F', (char) j);
         for (int j = 1; j <= 4; j++)
-            liste[i++] = new Tile('S', (char) j);
+            array[i++] = new Tile('S', (char) j);
 
-        return liste;
+        return array;
     }
 
     // Returns the number array of each tile type
     public static int[] number() {
-        int[] liste = new int[3 * 9 + 4 + 3 + 4 + 4];
+        int[] array = new int[3 * 9 + 4 + 3 + 4 + 4];
         int i = 0;
         for (int j = 1; j <= 9; j++)
-            liste[i++] = 4;
+            array[i++] = 4;
         for (int j = 1; j <= 9; j++)
-            liste[i++] = 4;
+            array[i++] = 4;
         for (int j = 1; j <= 9; j++)
-            liste[i++] = 4;
+            array[i++] = 4;
 
         for (int j = 1; j <= 4; j++)
-            liste[i++] = 4;
+            array[i++] = 4;
         for (int j = 1; j <= 3; j++)
-            liste[i++] = 4;
+            array[i++] = 4;
 
         for (int j = 1; j <= 4; j++)
-            liste[i++] = 1;
+            array[i++] = 1;
         for (int j = 1; j <= 4; j++)
-            liste[i++] = 1;
+            array[i++] = 1;
 
-        return liste;
+        return array;
     }
 
     public int dispoIndex() {
@@ -119,7 +115,7 @@ public class Tile {
         }
     }
 
-    public boolean appairable(Tile other) {
+    public boolean isPair(Tile other) {
         if (this.free())
             return false;
         if (this.type == 'F' && other.type == 'F')
@@ -127,17 +123,5 @@ public class Tile {
         if (this.type == 'S' && other.type == 'S')
             return true;
         return this.equals(other);
-    }
-
-    // Checks the tile creation
-    public static void main(String[] args) {
-        int[] test = Tile.number();
-        for (int i = 0; i < test.length; i++) {
-            System.out.println(test[i]);
-        }
-
-        for (Tile t : Tile.all()) {
-            System.out.println("index de " + t + ": " + t.dispoIndex());
-        }
     }
 }

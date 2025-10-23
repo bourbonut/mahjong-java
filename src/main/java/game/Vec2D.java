@@ -43,8 +43,7 @@ public class Vec2D {
 
     @Override
     public String toString() {
-        String formatString = "Vec2D{'x': %d, 'y': %d}";
-        return String.format(formatString, x, y);
+        return String.format("Vec2D{'x': %d, 'y': %d}", x, y);
     }
 
     @Override

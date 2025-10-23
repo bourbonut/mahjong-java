@@ -518,7 +518,7 @@ public class Board implements Cloneable {
     public boolean validMerge(Vec2D a, Vec2D b) {
         // Checks if the tiles are equivalent
         // verification de si les tuiles se correspondent
-        if (!this.getCase(a).appairable(this.getCase(b))) {
+        if (!this.getCase(a).isPair(this.getCase(b))) {
             return false;
         }
         // System.out.println("search");

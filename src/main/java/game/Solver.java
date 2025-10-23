@@ -45,10 +45,10 @@ public class Solver {
         for (; p.x < size; p.x++) {
             for (p.y = 1; p.y <= size; p.y++) {
                 Vec2D near = new Vec2D(p.x, p.y - 1);
-                if (board.getCase(near).appairable(board.getCase(p)))
+                if (board.getCase(near).isPair(board.getCase(p)))
                     return new Vec2D[] { near, p };
                 near = new Vec2D(p.x - 1, p.y);
-                if (board.getCase(near).appairable(board.getCase(p)))
+                if (board.getCase(near).isPair(board.getCase(p)))
                     return new Vec2D[] { near, p };
             }
         }
@@ -136,7 +136,7 @@ public class Solver {
                     // Finds the corresponding candidate
                     for (int i = 0; i < candidats.size(); i++) {
                         Vec2D c = candidats.get(i);
-                        if (board.getCase(c).appairable(board.getCase(next))) {
+                        if (board.getCase(c).isPair(board.getCase(next))) {
                             // tester si il y a un chemin valide
                             if (board.validMerge(next, c))
                                 return new Vec2D[] { next, c };
@@ -175,7 +175,7 @@ public class Solver {
         Vec2D b = new Vec2D(start.x, start.y + 1);
         for (; b.x <= size; b.x++) {
             for (; b.y <= size; b.y++) {
-                if (board.getCase(a).appairable(board.getCase(b)))
+                if (board.getCase(a).isPair(board.getCase(b)))
                     return b;
             }
             b.y = 1;
