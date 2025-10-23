@@ -1,7 +1,6 @@
 package game;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 /**
  * Solver class which solve a board step by step. It can also be used as a tool to genrate a safe solvable board. In the

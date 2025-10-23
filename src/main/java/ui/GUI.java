@@ -14,7 +14,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,11 +37,16 @@ import javax.swing.WindowConstants;
 
 public class GUI extends JPanel {
 
+    static int IMG_WIDTH = 50;
+    static int IMG_HEIGHT = 70;
+    static int BOARD_SIZE = 12;
+    static Vec2D MAX_IMG_SCALE = new Vec2D(IMG_WIDTH, IMG_HEIGHT);
     Game game;
     int difficulty;
 
     Image images[];
     Vec2D imgScale; // Update by the display method of the board (see UI designer)
+    Vec2D offset; // Update when resizing the screen
 
     Vec2D selection;
     boolean noSolution;
@@ -72,9 +76,8 @@ public class GUI extends JPanel {
             Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        JFrame window = new JFrame("Majhong");
+        JFrame window = new JFrame("Mahjong");
         window.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        // frame.setSize(1920, 1080);
         window.setVisible(true);
         GUI gui = new GUI();
         window.add(gui);
@@ -155,27 +158,39 @@ public class GUI extends JPanel {
                 // UI designer > JPanel > customize-code
 
                 Board board = game.getBoard();
-                int iWidth = images[0].getWidth(null);
-                int iHeight = images[0].getHeight(null);
                 Dimension dim = this.getSize();
-                int size = board.getSize();
-                imgScale = new Vec2D(dim.width / size, dim.height / size);
-                for (int row = 1; row <= size; row++) {
-                    for (int col = 1; col <= size; col++) {
+
+                // For dynamic resizing, count the number of times a tile can be placed on the
+                // limited screen size. Then it computes the image scale given this number.
+                int qW = dim.width / BOARD_SIZE;
+                int qH = dim.height / BOARD_SIZE;
+                boolean cW = ((qW * IMG_HEIGHT / IMG_WIDTH) * BOARD_SIZE) <= dim.width;
+                boolean cH = ((qH * IMG_WIDTH / IMG_HEIGHT) * BOARD_SIZE) <= dim.height;
+                int q = cW && cH ? Math.min(qW, qH) : cH ? qH : qW;
+                imgScale = new Vec2D(
+                    Math.min(q == qW ? qW: qH * IMG_WIDTH / IMG_HEIGHT, MAX_IMG_SCALE.x),
+                    Math.min(q == qH ? qH: qW * IMG_HEIGHT / IMG_WIDTH, MAX_IMG_SCALE.y)
+                );
+                offset = new Vec2D(
+                    (dim.width - imgScale.x * BOARD_SIZE) / 2,
+                    (dim.height - imgScale.y * BOARD_SIZE) / 2
+                );
+                for (int row = 1; row <= BOARD_SIZE; row++) {
+                    for (int col = 1; col <= BOARD_SIZE; col++) {
                         Tile tile = board.getCase(new Vec2D(row, col));
                         if (!tile.free()) {
-                            g.drawImage(imageFor(tile), (col - 1) * imgScale.x, (row - 1) * imgScale.y,
-                                    col * imgScale.x, row * imgScale.y, 0, 0, iWidth, iHeight, null);
+                            g.drawImage(imageFor(tile), (col - 1) * imgScale.x + offset.x, (row - 1) * imgScale.y + offset.y,
+                                    col * imgScale.x + offset.x, row * imgScale.y + offset.y, 0, 0, IMG_WIDTH, IMG_HEIGHT, null);
                         }
                     }
                 }
 
                 if (selection != null) {
                     g.setColor(new Color(0.9f, 0.2f, 0.1f));
-                    g.drawRoundRect((selection.y - 1) * imgScale.x, (selection.x - 1) * imgScale.y, imgScale.x,
+                    g.drawRoundRect((selection.y - 1) * imgScale.x + offset.x, (selection.x - 1) * imgScale.y + offset.y, imgScale.x,
                             imgScale.y, 2, 5);
                     g.setColor(new Color(0.8f, 0.3f, 0.1f));
-                    g.drawRoundRect((selection.y - 1) * imgScale.x - 1, (selection.x - 1) * imgScale.y - 1,
+                    g.drawRoundRect((selection.y - 1) * imgScale.x + offset.x - 1, (selection.x - 1) * imgScale.y + offset.y - 1,
                             imgScale.x + 2, imgScale.y + 2, 3, 6);
                 }
 
@@ -202,9 +217,9 @@ public class GUI extends JPanel {
 
                 if (hint != null) {
                     g.setColor(new Color(1f, 1f, 0.2f));
-                    g.drawRoundRect((hint[0].y - 1) * imgScale.x, (hint[0].x - 1) * imgScale.y, imgScale.x, imgScale.y,
+                    g.drawRoundRect((hint[0].y - 1) * imgScale.x + offset.x, (hint[0].x - 1) * imgScale.y + offset.y, imgScale.x, imgScale.y,
                             2, 5);
-                    g.drawRoundRect((hint[1].y - 1) * imgScale.x, (hint[1].x - 1) * imgScale.y, imgScale.x, imgScale.y,
+                    g.drawRoundRect((hint[1].y - 1) * imgScale.x + offset.x, (hint[1].x - 1) * imgScale.y + offset.y, imgScale.x, imgScale.y,
                             2, 5);
                 }
             }
@@ -236,7 +251,7 @@ public class GUI extends JPanel {
                 .addGroup(gameMenuLayout.createSequentialGroup().addContainerGap().addGroup(gameMenuLayout
                         .createParallelGroup(GroupLayout.Alignment.LEADING)
                         .addGroup(gameMenuLayout.createSequentialGroup()
-                                .addComponent(revertButton, GroupLayout.PREFERRED_SIZE, 128, GroupLayout.PREFERRED_SIZE)
+                                .addComponent(revertButton, GroupLayout.PREFERRED_SIZE, 178, GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(revertLabel, GroupLayout.DEFAULT_SIZE, 198, Short.MAX_VALUE))
                         .addGroup(gameMenuLayout.createSequentialGroup()
@@ -342,7 +357,7 @@ public class GUI extends JPanel {
 
         menuLabel.setFont(new java.awt.Font("Sans Serif", 1, 10)); // NOI18N
         menuLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        menuLabel.setText("- MAJHONG -");
+        menuLabel.setText("- MAHJONG -");
         menuLabel.setVerticalAlignment(SwingConstants.TOP);
         menuLabel.setHorizontalTextPosition(SwingConstants.CENTER);
 
@@ -353,11 +368,13 @@ public class GUI extends JPanel {
         });
 
         GroupLayout canvasLayout = new GroupLayout(canvas);
+        int totalImageWidth = 3 * IMG_WIDTH * BOARD_SIZE / 4; // must be greater or equal to 427, due to layout
+        int totalImageHeight = 3 * IMG_HEIGHT * BOARD_SIZE / 4;
         canvas.setLayout(canvasLayout);
         canvasLayout.setHorizontalGroup(
-                canvasLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGap(0, 0, Short.MAX_VALUE));
+                canvasLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGap(0, totalImageWidth, Short.MAX_VALUE));
         canvasLayout.setVerticalGroup(
-                canvasLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGap(0, 473, Short.MAX_VALUE));
+                canvasLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGap(0, totalImageHeight, Short.MAX_VALUE));
 
         GroupLayout layout = new GroupLayout(this);
         this.setLayout(layout);
@@ -382,7 +399,6 @@ public class GUI extends JPanel {
 
     private void hintButtonActionPerformed(ActionEvent evt) {// GEN-FIRST:event_hintButtonActionPerformed
         this.hint = game.hint();
-        // if (this.hint == null) //this.noSolution = true;
         gameDisplayUpdate();
     }// GEN-LAST:event_hintButtonActionPerformed
 
@@ -421,9 +437,9 @@ public class GUI extends JPanel {
         // Left click: select
         if (evt.getButton() == MouseEvent.BUTTON1) {
             if (selection == null)
-                selection = new Vec2D(evt.getY() / imgScale.y + 1, evt.getX() / imgScale.x + 1);
+                selection = new Vec2D((evt.getY() - offset.y) / imgScale.y + 1, (evt.getX() - offset.x) / imgScale.x + 1);
             else {
-                Vec2D second = new Vec2D(evt.getY() / imgScale.y + 1, evt.getX() / imgScale.x + 1);
+                Vec2D second = new Vec2D((evt.getY() - offset.y) / imgScale.y + 1, (evt.getX() - offset.x) / imgScale.x + 1);
                 game.merge(selection, second);
                 if (hint != null && ((hint[0].equals(selection) && hint[1].equals(second))
                         || (hint[0].equals(second) && hint[1].equals(selection)))) {

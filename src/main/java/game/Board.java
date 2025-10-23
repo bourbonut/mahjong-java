@@ -9,21 +9,20 @@ public class Board implements Cloneable {
     private Tile[][] cases;
     // Random number
     private Random rng;
-    private int size;
+    private int SIZE = 12;
 
     public Board() {
-        size = 12;
-        this.cases = new Tile[size + 2][size + 2]; // 12 + 2 => 2 for the border
+        this.cases = new Tile[SIZE + 2][SIZE + 2]; // 12 + 2 => 2 for the border
         this.rng = new Random();
     }
 
     public void load(String str) {
-        this.cases = new Tile[size + 2][size + 2];
+        this.cases = new Tile[SIZE + 2][SIZE + 2];
         this.generateBorder();
         String s;
         int i = 1; // Index of the element
-        for (int row = 1; row <= size; row++) {
-            for (int col = 1; col <= size; col++) {
+        for (int row = 1; row <= SIZE; row++) {
+            for (int col = 1; col <= SIZE; col++) {
                 s = str.substring(i, i + 2);
                 if (s.equals("..")) {
                     this.cases[row][col] = Tile.empty();
@@ -38,8 +37,8 @@ public class Board implements Cloneable {
 
     public String save() {
         String str = "[";
-        for (int row = 1; row <= size; row++) {
-            for (int col = 1; col <= size; col++) {
+        for (int row = 1; row <= SIZE; row++) {
+            for (int col = 1; col <= SIZE; col++) {
                 str += this.cases[row][col] + ",";
             }
         }
@@ -54,8 +53,8 @@ public class Board implements Cloneable {
         // Disponibility array given specified tile type
         int[] disponibilites = Tile.number();
 
-        for (int row = 1; row <= size; row++) {
-            for (int col = 1; col <= size; col++) {
+        for (int row = 1; row <= SIZE; row++) {
+            for (int col = 1; col <= SIZE; col++) {
                 int index = 0;
                 do {
                     index = rng.nextInt(types.length);
@@ -71,15 +70,15 @@ public class Board implements Cloneable {
     // Fills the border with empty tiles
     public void generateBorder() {
         Tile border = Tile.border();
-        for (int i = 0; i < size + 2; i++) {
+        for (int i = 0; i < SIZE + 2; i++) {
             this.cases[0][i] = border;
         }
-        for (int i = 0; i < size + 2; i++) {
-            this.cases[size + 1][i] = border;
+        for (int i = 0; i < SIZE + 2; i++) {
+            this.cases[SIZE + 1][i] = border;
         }
-        for (int i = 1; i <= size; i++) {
+        for (int i = 1; i <= SIZE; i++) {
             this.cases[i][0] = border;
-            this.cases[i][size + 1] = border;
+            this.cases[i][SIZE + 1] = border;
         }
     }
 
@@ -142,8 +141,8 @@ public class Board implements Cloneable {
         ArrayList<Vec2D> inserer = new ArrayList<>();
         int index;
         int direction;
-        int ligne = rng.nextInt(size) + 1;
-        int colonne = rng.nextInt(size) + 1;
+        int ligne = rng.nextInt(SIZE) + 1;
+        int colonne = rng.nextInt(SIZE) + 1;
 
         // First placed tile
         index = rng.nextInt(types.length);
@@ -174,7 +173,7 @@ public class Board implements Cloneable {
             // If the random choice does not allow to fill the two last cells,
             // it restarts until it works
             if (posAndDir.length == 1) {
-                this.cases = new Tile[size + 2][size + 2];
+                this.cases = new Tile[SIZE + 2][SIZE + 2];
                 this.generateSolvableStaticLine();
                 break;
             }
@@ -494,7 +493,7 @@ public class Board implements Cloneable {
     }
 
     public int getSize() {
-        return size;
+        return SIZE;
     }
 
     // Swap two tile
@@ -550,7 +549,7 @@ public class Board implements Cloneable {
 
             for (; side < sides.length; side++) {
                 Vec2D next = pos.add(sides[side]);
-                int max = this.size + 1;
+                int max = this.SIZE + 1;
                 if (next.x > max || next.y > max || next.x < 0 || next.y < 0) {
                     continue;
                 }
@@ -599,10 +598,10 @@ public class Board implements Cloneable {
         String display = new String();
         display += "     01 02 03 04 05 06 07 08 09 10 11 12      " + "\n";
         display += "   +-------------------------------------+    " + "\n";
-        for (int row = 1; row <= size; row++) {
+        for (int row = 1; row <= SIZE; row++) {
             String l = (row < 10 ? "0" : "") + row;
             display += l + " | ";
-            for (int col = 1; col <= size; col++) {
+            for (int col = 1; col <= SIZE; col++) {
                 display += this.cases[row][col].toString() + " ";
             }
             display += "| " + l + "\n";
@@ -620,10 +619,10 @@ public class Board implements Cloneable {
             cnse.printStackTrace(System.err); // Should never happen because the Cloneable interface is implemented
         }
 
-        p.size = this.size;
-        p.cases = new Tile[this.size + 2][this.size + 2];
-        for (int i = 0; i < this.size + 2; i++) {
-            for (int j = 0; j < this.size + 2; j++) {
+        p.SIZE = this.SIZE;
+        p.cases = new Tile[this.SIZE + 2][this.SIZE + 2];
+        for (int i = 0; i < this.SIZE + 2; i++) {
+            for (int j = 0; j < this.SIZE + 2; j++) {
                 p.cases[i][j] = this.cases[i][j];
             }
         }
