@@ -510,10 +510,8 @@ public class Board implements Cloneable {
     }
 
     // Checks if the move is possible
-    // verifier si un coup est possible entre 2 cases
     public boolean validMerge(Vec2D a, Vec2D b) {
         // Checks if the tiles are equivalent
-        // verification de si les tuiles se correspondent
         if (!this.getCell(a).isPair(this.getCell(b))) {
             return false;
         }
@@ -525,7 +523,6 @@ public class Board implements Cloneable {
         ArrayList<Integer> path = new ArrayList<>(); // Taken direction array to reach to each step
 
         // Variables of the current step
-        // path.add(-1);
         int side = 0; // Testing direction
         Vec2D pos = a; // Current position
         int shifts = 0; // Number of shifts in the current path
