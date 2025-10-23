@@ -96,18 +96,18 @@ public class Game {
 
     // Saves a game into the specific file
     public void save(String fileName) {
-        FileWriter fichier;
+        FileWriter file;
         try {
-            fichier = new FileWriter(fileName);
-            fichier.write("Board:" + System.getProperty("line.separator"));
-            fichier.write(this.board.save() + System.getProperty("line.separator"));
-            fichier.write("Hints left:" + System.getProperty("line.separator"));
-            fichier.write(this.available_hints + System.getProperty("line.separator"));
-            fichier.write("History:" + System.getProperty("line.separator"));
+            file = new FileWriter(fileName);
+            file.write("Board:" + System.getProperty("line.separator"));
+            file.write(this.board.save() + System.getProperty("line.separator"));
+            file.write("Hints left:" + System.getProperty("line.separator"));
+            file.write(this.available_hints + System.getProperty("line.separator"));
+            file.write("History:" + System.getProperty("line.separator"));
             for (int i = 0; i < this.history.size(); i++) {
-                fichier.write(this.history.get(i).save() + System.getProperty("line.separator"));
+                file.write(this.history.get(i).save() + System.getProperty("line.separator"));
             }
-            fichier.close();
+            file.close();
         } catch (IOException ex) {
             ex.printStackTrace();
         }
